@@ -1,0 +1,14 @@
+::selection{ background-color: #29a9e1; color: white; }
+::moz-selection{ background-color: #29a9e1; color: white; }
+::webkit-selection{ background-color: #29a9e1; color: white; }
+
+#infoMessage{
+	color: red;
+}
+
+.loginbackground{    
+    background-image: url(../img/rooster.jpg);
+    background-repeat:no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}

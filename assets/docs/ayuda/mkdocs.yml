@@ -1,0 +1,25 @@
+site_name: DiáliApp
+site_author: Bleutecmedia Web Services
+site_description: Temas de Ayuda
+copyright: Copyright &copy; 2020, DiáliApp v1.0.0 es un producto de Bleutecmedia
+highlightjs: true
+hljs_languages:
+  - yaml
+  - php
+  - javascript
+  - sql
+  - dart
+  - css
+site_description: Software para control de DPCA
+plugins:
+  - search:
+      lang: es
+nav:
+    - Inicio: index.md
+    - A cerca:
+      - Descripción: descripcion.md
+      - Versión: release-notes.md
+      - Licencia: license.md
+      - Términos: terminos.md
+      - Privacidad: privacidad.md
+theme: readthedocs

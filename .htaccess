@@ -1,0 +1,15 @@
+RewriteEngine On
+RewriteBase /dialisis/
+
+Options -Indexes
+RewriteRule ^$ /dialisis/index.php [L]
+RewriteCond $1 !^(index\.php|assets|system|user_guide|robots\.txt|favicon\.ico)
+RewriteRule ^(.*)$ /dialisis/index.php?/$1 [L]
+
+RewriteCond %{REQUEST_URI} ^system.*
+RewriteRule ^(.*)$ /index.php?/$1 [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+ErrorDocument 404 /index.php

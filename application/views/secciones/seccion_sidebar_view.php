@@ -1,10 +1,10 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 				<base href="<?php echo base_url(); ?>" />
 				<!-- Main Sidebar Container -->
-  				<aside class="main-sidebar sidebar-dark-primary elevation-4">
+  				<aside class="main-sidebar elevation-4 sidebar-dark-indigo">
 	    			<!-- Brand Logo -->
 				    <a href="<?php echo base_url(); ?>" class="brand-link logo-switch brand-link">
-						<img src="<?php echo base_url('assets/img/logos/social.png'); ?>" alt="Logo" class="brand-image-xl logo-xs">
+						<img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="Logo" class="brand-image-xl logo-xs">
 						<img src="<?php echo base_url('assets/img/logos/logo_header.png'); ?>" alt="Logo" class="brand-image-xs logo-xl" style="left: 12px">
 					</a>
 
@@ -16,7 +16,7 @@
 		    				?>
 		    				<div class="user-panel mt-3 pb-3 mb-3 d-flex">
 	    						<div class="image">
-	      							<img src="<?php echo base_url('assets/img/avatar/male/avatar13.png'); ?>" class="img-circle elevation-2" alt="User Image">
+	      							<img src="<?= $this->session->userdata('photo') ?>" class="img-circle elevation-2" alt="User Image">
 	    						</div>
 	    						<div class="info">
 	      							<a href="javascript: void(0);" onclick="fn_cargar_ajax_g('perfil','load_content',0)" class="d-block"><?php echo $user->first_name.' '.$user->last_name; ?></a>

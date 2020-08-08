@@ -19,7 +19,7 @@ class Ajustes_model extends CI_Model{
 
 		//Función del Modelo para obtener las configuraciones del Sitio en la Base de Datos:
 		$q  =   $this->db
-                ->select('*')
+                ->select('config.*')
                 ->from('config')
 				->join('users','users.id = config.conf_userid')
 				->where('users.id',$userid)

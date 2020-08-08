@@ -10,8 +10,8 @@
 $lang['label_home']					=	"Inicio";
 $lang['label_welcome']				=	"Bienvenid@";
 $lang['label_meta_keywords']		=	"sistema, aplicación web, software";
-$lang['label_app_shorname']			=	"'Diálisis";
-$lang['label_app_longname']			=	"Diálisis";
+$lang['label_app_shorname']			=	"DiáliApp";
+$lang['label_app_longname']			=	"DiáliApp";
 $lang['label_app_slogan']			=	"Diálisis Peritoneal Ambulatoria";
 $lang['label_app_description']		=	"Aplicación Web para administrar Diálisis Peritoneal Ambulatoria";
 $lang['label_app_version']			=	"Versión";

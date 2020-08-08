@@ -42,5 +42,5 @@ $config['smtp_port']	=	"587";
 |--------------------------------------------------------------------------
 |
 */
-$config['app_name']			=	"DiálApp"; // Nombre de la App
+$config['app_name']			=	"DiáliApp"; // Nombre de la App
 $config['app_version']		=	"1.0.0"; // Versión de la Aplicación

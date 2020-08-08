@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 	<!-- Navbar -->
-	<nav class="main-header navbar navbar-expand navbar-dark navbar-info">
+	<nav class="main-header navbar navbar-expand navbar-dark navbar-purple">
 
 		<!-- Left navbar links -->
 	    <ul class="navbar-nav">
@@ -11,7 +11,7 @@
 	        	<a href="<?= base_url(); ?>" class="nav-link"><i class="fas fa-home"></i>&nbsp;Inicio</a>
 	      	</li>
 	      	<li class="nav-item d-none d-sm-inline-block">
-	        	<a href="https://bleutecmedia.com" target="_blank" class="nav-link"><i class="fas fa-store-alt"></i>&nbsp;Bleutecmedia</a>
+	        	<a href="https://bleutecmedia.com" target="_blank" class="nav-link"><i class="fas fa-laptop-code"></i>&nbsp;Bleutecmedia</a>
 	      	</li>
 	      	<li class="nav-item d-none d-sm-inline-block">
 	        	<a href="javascript: void(0);" onclick="openmodal('<?= base_url(); ?>/assets/docs/ayuda/site/index.html')" class="nav-link"><i class="fas fa-question-circle"></i>&nbsp;Ayuda</a>

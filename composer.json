@@ -18,6 +18,7 @@
 		"phpmailer/phpmailer": "^6.1",
 		"mpdf/mpdf": "^8.0",
 		"google/apiclient": "^2.0",
+		"mobiledetect/mobiledetectlib": "^2.8"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"

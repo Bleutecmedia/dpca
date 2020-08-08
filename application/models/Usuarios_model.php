@@ -51,6 +51,9 @@ class Usuarios_model extends CI_Model{
                         // Asignamos Grupo al Usuario
                         $this->ion_auth->add_to_group(2, $p1['id']);
 
+                        // Creamos el registro de configuración del Usuario
+                        $this->db->insert('config',array('conf_userid'   => $p1['id']));
+
     				}else if(isset($accion) && $accion == 2){ // EDITAMOS EXISTENTE
     					// Capturamos
     					$userid 	=	$p1['id'];

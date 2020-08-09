@@ -159,7 +159,10 @@ $detect = new Mobile_Detect;
                           <?php
                         }else{
 
-                          ?><p class="lead text-success"><i class="fas fa-info-circle"></i>&nbsp;Intercambios realizados hoy: <?= $total . ' de ' . $conf->conf_intercambios ?></p><?php
+                          ?>
+                          <p class="lead text-success"><i class="fas fa-info-circle"></i>&nbsp;Intercambios realizados hoy: <?= $total . ' de ' . $conf->conf_intercambios ?></p>
+                          <div id="cargar_item"></div>
+                          <?php
 
                           // Si hay datos de un Intercambio abierto
                           if(isset($dpca) && $dpca){
@@ -402,16 +405,18 @@ $detect = new Mobile_Detect;
                                   dataType: 'html',
                                   data:{id:ban,item1:interid,item2:dato,item3:atr,'csrf_token':csrf_token},
                                   beforeSend: function(request){
-                                     
+                                     $("#cargar_item").spin(opts);
                                   },
                                   error:function(){ 
                                     fn_error();
+                                    $("#cargar_item").spin(false);
                                   },
                                   success: function(html) { 
-                                    fn_success('Todo piola...')
                                     setTimeout(function() {
                                       location.href = '<?= base_url() ?>';
-                                    }, 1000);
+                                    }, 600);
+
+                                    $("#cargar_item").spin(false);
                                   },
                                   timeout: 6000
                                 });

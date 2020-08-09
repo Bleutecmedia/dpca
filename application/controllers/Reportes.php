@@ -6,6 +6,9 @@ class Reportes extends CI_Controller {
 
 	public function __construct(){
 		parent::__construct();
+
+		// Cargamos el Modelo
+		$this->load->model('reportes_model');
 	}
 
 	public function index(){
@@ -24,6 +27,7 @@ class Reportes extends CI_Controller {
         // Obtenemos la Configuración del Sitio
 		$data['conf'] 		=	$this->ajustes_model->m_app(); //Configuración del Sitio
 		
+
 		// Cargamos la vista para deplegar el Inicio de la Aplicación
 		$data['opc']	=	0;
 		$this->load->view('reportes/reportes_inicio_view',$data);
@@ -31,10 +35,10 @@ class Reportes extends CI_Controller {
 	}// End index
 
 
-
-	public function fixture(){
-		// Función del Controlador para generar Cotización de Insumos en PDF
-
+	/**
+	*	Función para mostrar la tabla
+	*/
+	public function intercambios(){
 		//Comprobamos usuario logueado
         if (!$this->ion_auth->logged_in()){
 			header('Location: '.base_url('auth/login'), true, 302);
@@ -47,83 +51,131 @@ class Reportes extends CI_Controller {
             exit;
         }
 
-        // Cargamos el Modelo de datos necesario
-        $this->load->model('torneos_model');
+        // Recibimos los datos desde $_GET
+		$search 	=	$this->input->post('search');
+		$order 		=	$this->input->post('order');
+		$provid 	=	$this->input->post('proveedor');
 
-        // Obtenemos los ajustes del Usuario
-        $conf 			=	$this->ajustes_model->m_app();
-        $datos['conf'] 	=	$conf;
+		// Capturamos ID del Usuario
+		$userid 	=	$this->session->userdata('user_id');
 
-        // Capturamos ID del Usuario logueado
-        $userid 		=	$this->session->userdata('user_id');
+		//Procesamos el intervalo de fechas del tipo '2017-11-14 - 2017-11-14' a '2017-11-14' y '2017-11-14'
+		//Lo anterior, con la ayuda de la función substr — Devuelve parte de una cadena
+    	$fechas 		=	$this->input->post('fechas');//'2017-11-14 - 2017-11-14'
+    	$fecha_desde 	=	human_to_unix(trim(substr($fechas,0,11)) . ' 00:00:00');// Retorna: '2017-04-24'
+    	$fecha_hasta	=	human_to_unix(trim(substr($fechas,-11)) . ' 23:59:59');//Retorna: '2017-09-28'
 
-        // Obtenemos los datos del Torneo actual activo
-        $c1['userid']	=	$userid;
-        $torneo		    =	$this->torneos_model->m_actual(0,$c1);
+    	$sql_user 		=	"users.id = ".$userid." AND intercambios.in_status = 2 ";
 
-       	// Si hay datos del Torneo, podemos continuar
-       	if( $torneo ){
-       		
-       		// Pasamos ID del Torneo al Modelo
-       		$c1['torid']		=	$torneo->torid;
+		$sql_fecha =	"";// Fecha de Salida del Producto
+		if(isset($fechas) && $fechas != ""){
+			$sql_fecha = " AND intercambios.in_fecha BETWEEN '" . $fecha_desde ."' AND '" . $fecha_hasta ."'";
+		}
 
-       		// Pasamos los datos a la vista del Reporte
-       		$datos['torneo']	=	$torneo;
+		// Definimos las variables para constgruir las consultas
+		$termino 	=	trim($search['value']);		// Término de búsqueda
+		$columna 	=	$order['0']['column']; 	// 0,1,2 según la columna
+		$desc_asc 	=	$order['0']['dir'];		// ASC o DESC
 
-       		// Si el Torneo está abierto y está en Etapa de Encuentros
-       		if($torneo->tor_status == 2 && $torneo->tor_etapa == 2 ){
-				// Obtenemos la lista de los Partidos
-				$c1['ban']		   	=	5;
-                $c1['etapa']       	=    $torneo->tor_etapa_actual - 1;
-				$partidos  			=	$this->torneos_model->m_actual(1,$c1);
+		//Hacemos Switch con $columna para convertir los numeros de columna, por el nombre
+		// de la columna en la tabal de la base de datos para realizar la consulta de Ordenado
+		switch ($columna) {
 
-				// Pasamos los datos de los Partidos a la vista del Reporte
-				$datos['partidos']	=	$partidos;
+			case 1:
+				$campo 	=	"intercambios.in_fecha";
+				break;
 
-				/*
-				* Parámetros que recibe la función a través de $p1 desde donde sea llamada:
-				* 	-	pdf_path_a 		=>  ( FCPATH ) Ruta absolucta donde se ubicará el archivo en el servidor (para referencia interna)
-				* 	-	pdf_path_r 		=>	( base_url() ) Rula relativa donde se ubicará el archivo en el servidor (para acceso públlico)
-				*	-	pdf_filename	=>	Nombre completo del archivo
-				*	-	pdf_folio 		=>	Folio del PDF
-				*	-	pdf_template 	=>	Vista que contiene la plantilla del Reporte
-				* 	- 	pdf_depto 		=>	Nombre del Área o Departamento que realiza el Reporte
-				*	- 	pdf_process 	=>	Nombre del Proceso al que hace referencia el Reporte
-				*	- 	pdf_title 		=>	Título del PDF (para usarse como metadato del archivo)
-				*	- 	pdf_tags 		=>	Lista de tags para los metadatos del archivo
-				* 	- 	pdf_accion 		=>	La acción a realizar con el PDF generado.
-				*							D => Descargar, F => Guardar en el directorio
-				*   -  	datos 			=>	Datos a procesar en la vista
-				* 	-	pdf_delete 		=>	1 -> Se elimina y se vuelve a crear, 0 -> No se Elimina
-				*/
+			case 2:
+				$campo 	=	"intercambios.in_hora_sale_inicio";
+				break;
 
-		        // Ajustes 
-		        $p1 	=	array(
-		        	'pdf_path_a'		=>	 FCPATH . 'assets/uploads/files/fixture/',
-		        	'pdf_path_r'		=>	 base_url() . 'assets/uploads/files/fixture/',
-		        	'pdf_filename'		=>	'fixture_t'.$torneo->tor_folio,
-		        	'pdf_template'		=>	"reportes/reportes_fixture_view",
-		        	'pdf_depto'			=>	$conf->company,
-		        	'pdf_process'		=>	$torneo->tor_nombre,
-		        	'pdf_title'			=>	"LISTA DE COTEJOS",
-		        	'pdf_tags'			=>	"reporte, fixture, cotejos",
-		        	'pdf_accion'		=>	"F",
-		        	'datos'				=>	$datos,
-		        	'pdf_delete'		=>	1
-		        );
+			case 3:
+				$campo 	=	"intercambios.in_hora_sale_termina";
+				break;
 
-		        // Llamamos la función que genera el PDF con la libreía mPDF v8.x
-		        $this->_pdf($p1);
+			case 4:
+				$campo 	=	"intercambios.in_hora_entra_inicio";
+				break;
 
-       		}else{
-	       		echo 0; // Response error
-	       	}
-	    }else{
-       		echo 0; // Response error
-       	}
+			case 5:
+				$campo 	=	"intercambios.in_hora_entra_termina";
+				break;
 
-	}// End test
+			case 6:
+				$campo 	=	"intercambios.in_peso_inicial";
+				break;
 
+			case 7:
+				$campo 	=	"intercambios.in_peso_final";
+				break;
+
+			default:
+				$campo 	=	"";
+				break;
+		}
+
+		// Creamos la cadena de la consulta
+		$sql 	= 	$sql_user.$sql_fecha;
+		if(isset($termino) && $termino){
+			$sql 	= 	$sql.' AND ( intercambios.in_fecha LIKE "%'.$termino.'%")';
+		}
+
+		// Creamos el array para ejecutar la consulta:
+		$c1 	=	array(
+			'start'		=>	$this->input->post('start'),
+			'length'	=>	$this->input->post('length'),
+			'search'	=>	$search,
+			'sql'		=>	$sql,
+			'orderby' 	=>	$campo,
+			'ordertype' =>	$desc_asc
+		);
+
+		// Lamamos la función del modelo para obtener los datos con el Limit
+		$c1['ban']			=	1;
+		$result  			=	$this->reportes_model->m_intercambios(1,$c1);
+
+		// Lamamos la función para Obtener el TOTAL de registros de la BD
+		$c1['ban']			=	2;
+		$result_total  		=	$this->reportes_model->m_intercambios(1,$c1);
+
+		// Lamamos la función para Obtener el TOTAL DE DATOS FILTRADOS SIN EL LIMIT
+		$c1['ban']			=	3;
+		$result_filtered  	=	$this->reportes_model->m_intercambios(1,$c1);
+
+		$res['recordsFiltered']	= 	$result_filtered;
+		$res['recordsTotal']	= 	$result_total;
+		
+		//Acondionamos los datos que se deben mostrar en las Columnas de la Tabla con 'datatables'
+		$res1 =	array();
+		if($result){
+			foreach ($result as $k => $row){
+
+				// Generamos las opciones generales para cara registro de la tabla
+				$opcs 	=	'';
+				$opcs 	=	$opcs.'&nbsp;<a href="javascript: void(0);" title="Eliminar" class="deletele btn btn-sm bg-maroon"><i class="fas fa-trash-alt"></i></a>';
+				$opcs 	=	$opcs.'&nbsp;<a href="javascript: void(0);" title="Editar" class="editable btn btn-sm bg-olive"><i class="fas fa-edit"></i></a>';
+				$opcs 	=	$opcs.'&nbsp;<a href="javascript: void(0);" title="Detalles" class="detaile btn btn-sm bg-navy"><i class="fas fa-bars"></i></a>';
+
+				// Generamos el arreglo que pasaremos a la vista para generar la tabla
+				$res1[$k]['interid'] 		=	$row->interid;
+				$res1[$k]['userid'] 		=	$row->userid;
+				$res1[$k]['num'] 			=	$k + 1;
+				$res1[$k]['dia'] 			=	date('Y-m-d',$row->in_fecha);
+				$res1[$k]['sinicio'] 		=	date('H:i:s',$row->in_hora_sale_inicio);
+				$res1[$k]['sfin'] 			=	date('H:i:s',$row->in_hora_sale_termina);
+				$res1[$k]['einicio'] 		=	date('H:i:s',$row->in_hora_entra_inicio);
+				$res1[$k]['efin'] 			=	date('H:i:s',$row->in_hora_entra_termina);
+				$res1[$k]['pesoinicio'] 	= 	number_nice($row->in_peso_inicial); // Nombre del Proveedor
+				$res1[$k]['pesofin'] 		= 	number_nice($row->in_peso_final); // Costo total del Embarque
+				$res1[$k]['opcs'] 			=	$opcs;
+			}//End foreach
+		}//End if($result)
+		
+		$res['data']	=	$res1;
+
+		echo json_encode($res);
+
+	}// End intercambios()
 
 
 	public function _pdf($p1=""){

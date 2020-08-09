@@ -41,6 +41,7 @@
     	<script type="text/javascript" src="//cdn.jsdelivr.net/npm/@mojs/core"></script>
     	<script type="text/javascript" src="<?php echo base_url('assets/js/demo.js'); ?>"></script>
     	<script type="text/javascript" src="<?php echo base_url('assets/js/custom.js'); ?>"></script>
-    	
+    	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment-with-locales.min.js"></script>
+    	<script type="text/javascript" src="//cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     </body>
 </html>

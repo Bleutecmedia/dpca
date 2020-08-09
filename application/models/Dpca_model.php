@@ -24,9 +24,10 @@ class Dpca_model extends CI_Model{
                 if(isset($p1['ban']) && $p1['ban'] == 1){ // Retorna datos de un Intercambio en base a su ID
                     $q  =   $this
                         ->db
-                        ->select('intercambios.*')
+                        ->select('intercambios.*,soluciones.*')
                         ->from('intercambios')
                         ->join('users','users.id = intercambios.in_userid')
+                        ->join('soluciones','soluciones.solid = intercambios.in_solid')
                         ->order_by('intercambios.in_fecha','DESC')
                         ->limit (1)
                         ->where($p1['sql'])
@@ -43,8 +44,9 @@ class Dpca_model extends CI_Model{
                 }else if(isset($p1['ban']) && $p1['ban'] == 2){// Retorna datos del último DCPA del día abierto
                     $q  =   $this
                         ->db
-                        ->select('intercambios.*')
+                        ->select('intercambios.*,soluciones.*')
                         ->from('intercambios')
+                         ->join('soluciones','soluciones.solid = intercambios.in_solid')
                         ->join('users','users.id = intercambios.in_userid')
                         ->order_by('id','DESC')
                         ->limit (1)
@@ -73,8 +75,15 @@ class Dpca_model extends CI_Model{
                     // Guardamos registro
                     $this->db->insert('intercambios',$p1);
 
-                }else if(isset($p1['ban']) && $p1['ban'] == 2){
+                }else if(isset($p1['ban']) && $p1['ban'] == 2){// Modifica Intercambio DPCA
+                    // Capturamos ID
+                    $interid    =   $p1['interid'];
 
+                    // Eliminamos
+                    unset($p1['interid'],$p1['ban']);
+
+                    // Actualizamos registro
+                    $this->db->where('interid',$interid)->update('intercambios',$p1);
                 }
 
                 //Comprobamos el resultado de las Transacciones
@@ -103,7 +112,35 @@ class Dpca_model extends CI_Model{
 
                 break;
         }
-    }
+    }// End
+
+    /**
+    * Función del Modelo para gestionar el tipo de infisiones o bolsas
+    */
+    public function m_socuciones($id="",$p1=""){
+        switch ($id) {
+            case 1:// Listar
+                // code...
+                break;
+
+            case 2: // Transacciones
+                break;
+            
+            default:// Retorna todos los tipos de bolsas
+                $q  =   $this
+                        ->db
+                        ->select('*')
+                        ->from('soluciones')
+                        ->get();
+
+                    if ($q->num_rows() > 0){
+                        return $q->result();
+                    }
+                    return false;
+
+                break;
+        }
+    }// End m_socuciones
 
 
     /** 

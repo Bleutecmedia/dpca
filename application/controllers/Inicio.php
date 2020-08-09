@@ -87,6 +87,9 @@ class Inicio extends CI_Controller {
 					$data['dpca'] 	=	$this->dpca_model->m_intercambios(1,$c1);
 				}
 
+				// Obtenemos los tipos de bolsas
+				$data['sols']		=	$this->dpca_model->m_socuciones();
+
 			}//End if($user)
 
 		}else{

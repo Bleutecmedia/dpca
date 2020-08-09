@@ -110,8 +110,95 @@ class Dpca extends CI_Controller {
 				}
 
         		break;
+        } // End switch
+
+	}// End nuevo
+
+
+	/**
+	* Función del Controlador para llevar el proceso del DPCA
+	*/
+	public function proceso(){
+		//Comprobamos usuario logueado
+        if (!$this->ion_auth->logged_in()){
+			header('Location: '.base_url('auth/login'), true, 302);
+			exit;
+        }
+        
+        //Para evitar el acceso directo que no sea via ajax 
+		if (!$this->input->is_ajax_request()) {
+            header('Location: '.base_url(), true, 302);
+            exit;
         }
 
+        // Obtenemos los ajustes del Usuario
+        $conf 	=	$this->ajustes_model->m_app();
+
+        // Capturamos la badera
+        $ban 	=	$this->input->get_post('id');
+
+       	// Saneamos los envíos por $_POST
+		$this->input->post(NULL, TRUE);  // returns all POST items with XSS filter
+
+		// Bandera de destroy session
+		$end_ses 	=	0;
+
+        // Decidimos qué hacer
+        switch ($ban) {
+        	case 1: // ACTUALIZAR TIPO DE SOLUCIÓN
+        		// Capturamos valores y creamos array para actualizar 
+        		$inter 	=	array(
+        			'interid'	=>	$this->input->post('item1'),
+        			'in_solid'	=>	$this->input->post('item2')
+        		);
+        		break;
+
+        	case 2: // PESOS DE ENTRADA Y SALIDA
+        		// Capturamos valores y creamos array para actualizar 
+        		$input 	=	'in_' . $this->input->post('item3');
+
+        		$inter 	=	array(
+        			'interid'	=>	$this->input->post('item1'),
+        			"$input"	=>	$this->input->post('item2')
+        		);
+        		break;
+
+        	case 3: // ACTUALIZAR HORAS DE ENTRADA Y SALIDA
+        		// Capturamos valores y creamos array para actualizar 
+        		$input 	=	'in_hora_' . $this->input->post('item2');
+
+        		$inter 	=	array(
+        			'interid'	=>	$this->input->post('item1'),
+        			"$input"	=>	time()
+        		);
+        		break;
+        	
+        	default: // TERMINAR EL PROCESO
+        		// Capturamos valores y creamos array para actualizar 
+        		$inter 	=	array(
+        			'interid'	=>	$this->input->post('item1'),
+        			'in_status'	=>	2
+        		);
+
+        		$end_ses 	=	1;
+        		break;
+        }
+
+        // Llamamos la función del Modelo que guarda los datos en el Intercambio
+        $inter['ban']	=	2;
+        $res 			=	$this->dpca_model->m_intercambios(2,$inter);
+
+        // Comprobamos resultado de la transacción
+        if($res){
+        	
+        	if($end_ses){
+        		$this->session->unset_userdata('interid');
+        	}
+
+        	echo 1; // Éxito
+        }else{
+        	echo 0; // Error
+        }
 	}
 
-}
+}// End class

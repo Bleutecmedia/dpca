@@ -159,31 +159,266 @@ $detect = new Mobile_Detect;
                           <?php
                         }else{
 
-                          ?><p class="lead text-success"><i class="fas fa-info-circle"></i>&nbsp;Total de Intercambios realizados hoy: <?= $total . ' de ' . $conf->conf_intercambios ?></p><?php
-                          
+                          ?><p class="lead text-success"><i class="fas fa-info-circle"></i>&nbsp;Intercambios realizados hoy: <?= $total . ' de ' . $conf->conf_intercambios ?></p><?php
+
                           // Si hay datos de un Intercambio abierto
                           if(isset($dpca) && $dpca){
+                            // Tipo de solución especficada
+                            $tsol   = $dpca->solid;
+
+                            // Tipo de soluciones
+                            $soli[''] = 'Seleccione Solución';
+                            if($sols){
+                              foreach ($sols as $k => $row) {
+                                if($row->solid > 1){
+                                  $soli[$row->solid]  = $row->sol_color.' ('.$row->sol_concentra.')';
+                                }
+                              }
+                            }
+
+                            // Peso inicial
+                            $peso_inicial = array(
+                              'name'          => 'peso_inicial',
+                              'id'            => 'peso_inicial',
+                              'tabindex'      =>  '1',
+                              'class'         =>  'form-control validate[required]',
+                              'data-inputmask'=>   "'alias': 'integer'",
+                              'placeholder'   =>  'Peso Inicial',
+                              'value'         =>  $dpca->in_peso_inicial
+                            );
+
+                            // Peso final
+                            $peso_final = array(
+                              'name'          => 'peso_final',
+                              'id'            => 'peso_final',
+                              'tabindex'      =>  '1',
+                              'class'         =>  'form-control validate[required]',
+                              'data-inputmask'=>   "'alias': 'integer'",
+                              'placeholder'   =>  'Peso Final',
+                              'value'         =>  $dpca->in_peso_final
+                            );
+
+                            echo form_open('ajustes/paciente','name="add_paciente" id="add_paciente" class="form-horizontal"'); 
+                          
                             ?>
-                            <strong>Orden</strong>
-                            <ul>
-                              <li>Capturar tipo de Bolsa.</li>
-                              <li>Capturar Peso de Bolsa nueva.</li>
-                              <li>Capturar Fecha y hora de inicio de la salida.</li>
-                              <li>Capturar Fecha y hora de fin de la salida.</li>
-                              <li>Capturar Fecha y hora de inicio de la entrada.</li>
-                              <li>Capturar Fecha y hora de fin de la entrada.</li>
-                              <li>Capturar Peso del líquido de salida.</li>
-                            </ul>
+                            <div class="row">
+                              <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4">
+                                <label for="soli">&nbsp;Tipo de Solución:</label><br>
+                                <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-box-open"></i></span>
+                                  </div>
+                                  <?php echo form_dropdown('soli',$soli,$tsol,'id="soli" tabindex=1 class="form-control validate[required]"'); ?>
+                                </div><!-- ./input-group -->
+                              </div><!-- ./col-sm-12 col-md-12 col-lg-4 col-xl-4 -->
+                            </div><!-- ./row -->
+
+                            <?php
+                            if($tsol > 1){
+                              ?>
+                              <div class="row">
+                                <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4">
+                                  <label for="peso_inicial">&nbsp;Peso Inicial:</label><br>
+                                  <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text"><i class="fas fa-weight"></i></span>
+                                    </div>
+                                     <?php echo form_input($peso_inicial); ?>
+                                   </div><!-- ./input-group -->
+                                </div><!-- ./col-sm-12 col-md-12 col-lg-4 col-xl-4 -->
+                              </div><!-- ./row -->
+
+                              <?php
+                              if(intval($dpca->in_peso_inicial) > 0){
+                                ?>
+                                <div class="row mt-2">
+                                  <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                    <h4><i class="fas fa-sign-out-alt"></i>&nbsp;SALIDA</h4>
+                                  </div><!-- ./col-sm-12 col-md-12 col-lg-12 col-xl-12 -->
+                                </div>
+
+                                <div class="row mt-2">
+                                  <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4 text-center">
+                                    <?php 
+                                    if($dpca->in_hora_sale_inicio == 0){
+                                      ?><a href="javascript: void(0)" onclick="fn_proceso(3,'sale_inicio',0)" class="btn btn-block bg-maroon"><i class="fas fa-hourglass-start"></i>&nbsp;Empieza la Salida</a><?php
+                                    }else{
+                                      ?>
+                                      <p class="lead"><?= unix_to_human($dpca->in_hora_sale_inicio) ?><small class="float-right"><a href="javascript: void(0)" onclick="fn_proceso(3,'sale_inicio',0)" class="btn btn-sm btn-default"><i class="fas fa-redo-alt"></i></a></small></p>
+                                      
+                                      <?php
+                                    }
+                                    ?>
+                                  </div><!-- ./col-sm-12 col-md-12 col-lg-4 col-xl-4 -->
+                                </div><!-- ./row -->
+                                <?php
+
+                                if($dpca->in_hora_sale_inicio > 0){
+                                ?>
+                                  <div class="row mt-2">
+                                    <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4 text-center">
+                                      <?php 
+                                      if($dpca->in_hora_sale_termina == 0){
+                                        ?><a href="javascript: void(0)" onclick="fn_proceso(3,'sale_termina',0)" class="btn btn-block bg-maroon"><i class="fas fa-hourglass-end"></i>&nbsp;Termina la Salida</a><?php
+                                      }else{
+                                        ?>
+                                        <p class="lead"><?= unix_to_human($dpca->in_hora_sale_termina) ?><small class="float-right"><a href="javascript: void(0)" onclick="fn_proceso(3,'sale_termina',0)" class="btn btn-sm btn-default"><i class="fas fa-redo-alt"></i></a></small></p>
+                                        
+                                        <?php
+                                      }
+                                      ?>
+                                    </div><!-- ./col-sm-12 col-md-12 col-lg-4 col-xl-4 -->
+                                  </div><!-- ./row -->
+                                  <?php
+
+                                  if($dpca->in_hora_sale_termina > 0){
+                                  ?>
+                                    <div class="row mt-4">
+                                      <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                        <h4><i class="fas fa-sign-in-alt"></i>&nbsp;ENTRADA</h4>
+                                      </div><!-- ./col-sm-12 col-md-12 col-lg-12 col-xl-12 -->
+                                    </div>
+
+                                    <div class="row">
+                                      <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4 text-center">
+                                        <?php 
+                                        if($dpca->in_hora_entra_inicio == 0){
+                                          ?><a href="javascript: void(0)" onclick="fn_proceso(3,'entra_inicio',0)" class="btn btn-block bg-olive"><i class="fas fa-hourglass-start"></i>&nbsp;Empieza la Entrada</a><?php
+                                        }else{
+                                          ?>
+                                          <p class="lead"><?= unix_to_human($dpca->in_hora_entra_inicio) ?><small class="float-right"><a href="javascript: void(0)" onclick="fn_proceso(3,'entra_inicio',0)" class="btn btn-sm btn-default"><i class="fas fa-redo-alt"></i></a></small></p>
+                                          
+                                          <?php
+                                        }
+                                        ?>
+                                      </div><!-- ./col-sm-12 col-md-12 col-lg-4 col-xl-4 -->
+                                    </div><!-- ./row -->
+                                    <?php
+
+                                    if($dpca->in_hora_entra_inicio > 0){
+                                      ?>
+                                      <div class="row mt-2">
+                                        <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4 text-center">
+                                          <?php 
+                                          if($dpca->in_hora_entra_termina == 0){
+                                            ?><a href="javascript: void(0)" onclick="fn_proceso(3,'entra_termina',0)" class="btn btn-block bg-olive"><i class="fas fa-hourglass-start"></i>&nbsp;Termina la Entrada</a><?php
+                                          }else{
+                                            ?>
+                                            <p class="lead"><?= unix_to_human($dpca->in_hora_entra_termina) ?><small class="float-right"><a href="javascript: void(0)" onclick="fn_proceso(3,'entra_termina',0)" class="btn btn-sm btn-default"><i class="fas fa-redo-alt"></i></a></small></p>
+                                            <?php
+                                          }
+                                          ?>
+                                        </div><!-- ./col-sm-12 col-md-12 col-lg-4 col-xl-4 -->
+                                      </div><!-- ./row -->
+                                      <?php
+
+                                      if($dpca->in_hora_entra_termina > 0){
+                                      ?>
+                                        <div class="row mt-4">
+                                          <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4">
+                                            <label for="peso_final">&nbsp;Peso Final:</label><br>
+                                            <div class="input-group mb-3">
+                                              <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-weight"></i></span>
+                                              </div>
+                                               <?php echo form_input($peso_final); ?>
+                                             </div><!-- ./input-group -->
+                                          </div><!-- ./col-sm-12 col-md-12 col-lg-4 col-xl-4 -->
+                                        </div><!-- ./row -->
+                                        <?php
+
+                                        if(intval($dpca->in_peso_final) > 0){
+                                        ?>
+                                          <div class="row mt-4">
+                                            <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4 text-center">
+                                              <a href="javascript: void(0)" onclick="fn_proceso()" class="btn btn-block btn-primary"><i class="fas fa-check-circle"></i>&nbsp;Terminar DPCA</a>
+                                            </div><!-- ./col-sm-12 col-md-12 col-lg-4 col-xl-4 text-center -->
+                                          </div><!-- ./row -->
+                                          <?php
+                                        }else{
+                                          ?><p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp;Especifique Peso Final.</p><?php
+                                        }
+
+                                      } else{
+                                        ?><p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp;Ingrese Hora de Fin de Entrada.</p><?php
+                                      }
+
+                                      }else{
+                                        ?><p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp;Ingrese Hora de Inicio de Entrada.</p><?php
+                                      }
+
+                                    }else{
+                                      ?><p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp;Ingrese Hora de Fin de Salida.</p><?php
+                                    }
+
+                                  }else{
+                                    ?><p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp;Ingrese Hora de Inicio de Salida.</p><?php
+                                  }
+
+                                }else{
+                                  ?><p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp;Especifique Peso Inicial.</p><?php
+                                }
+
+                              }else{
+                                ?><p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp;Seleccione tipo de Solución.</p><?php
+                              }
+                            echo form_close(); ?>
+                            
+                            <script type="text/javascript">
+                              $(function(){
+                                // mask
+                                $(":input").inputmask();
+
+                                // solucion
+                                $("#soli").on('change',function(){
+                                  let valor = $(this).val();
+
+                                  if(valor !=""){
+                                    fn_proceso(1,valor,0);
+                                  }
+                                });
+
+                                // Pesos
+                                $("#peso_inicial,#peso_final").on('change',function(){
+                                   let valor  = $(this).val();
+                                   let id     = $(this).attr("id");
+
+                                  if(valor !=""){
+                                    fn_proceso(2,valor,id);
+                                  }
+
+                                });
+
+                              });
+
+                              function fn_proceso(ban,dato,atr){
+
+                                let interid   = '<?= $dpca->interid ?>';
+
+                                $.ajax({
+                                  url: 'dpca/proceso',
+                                  cache: false,
+                                  type: 'post',
+                                  dataType: 'html',
+                                  data:{id:ban,item1:interid,item2:dato,item3:atr,'csrf_token':csrf_token},
+                                  beforeSend: function(request){
+                                     
+                                  },
+                                  error:function(){ 
+                                    fn_error();
+                                  },
+                                  success: function(html) { 
+                                    fn_success('Todo piola...')
+                                    setTimeout(function() {
+                                      location.href = '<?= base_url() ?>';
+                                    }, 1000);
+                                  },
+                                  timeout: 6000
+                                });
+                              }
+                            </script>
                             
                             <?php
-                            echo '<pre>';
-                            print_r($this->session->all_userdata());
-                            echo '</pre>';
-
-                            echo '<pre>';
-                            print_r($dpca);
-                            echo '</pre>';
-
                           }else{
                             // No hay Intercambios abiertos, damos opción a abrir uno
                             for ($i = $total + 1; $i <= $conf->conf_intercambios; $i++) {

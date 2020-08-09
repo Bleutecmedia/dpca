@@ -15,6 +15,7 @@ class Inicio extends CI_Controller {
 		parent::__construct();
 		// Cargamos los Modelos
 		$this->load->model('inicio_model');
+		$this->load->model('dpca_model');
 	}
 
 	public function index(){
@@ -52,6 +53,39 @@ class Inicio extends CI_Controller {
 				// Creamos el array para pasar a la vista
 				$data['user']		=	$user;
 				$data['grupos']		=	$grupos;
+
+				// Generamos intervalo de fechas
+            	$desde 	= human_to_unix(date('Y-m-d',time()) . ' 00:00:00');
+            	$hasta 	= human_to_unix(date('Y-m-d',time()) . ' 23:59:59');
+
+            	// Creamos la cadena de consulta
+            	$c1['sql']	=	" users.id = ".$userid." AND intercambios.in_status = 2 AND intercambios.in_fecha BETWEEN '" . $desde ."' AND '" . $hasta ."'";
+
+				// Obtenemos el Total de Intercambios del día
+				$data['total']		=	$this->dpca_model->m_intercambios(0,$c1);
+
+				// Capturamos ID del Intercambio abierto desde la sesión
+				$interid 	=	$this->session->userdata('interid');
+
+				// Verificamos desde la SESIÓN si existe DPCA abierto
+				if(isset($interid) && $interid){
+
+					// Creamos la cadena de consulta
+            		$c1['sql']	=	" intercambios.interid = " . $interid . " AND intercambios.in_status = 1";
+
+					// Obtenemos sus datos
+					$c1['ban']		=	1;
+					$data['dpca']	=	$this->dpca_model->m_intercambios(1,$c1);
+
+				}else{
+					// NO hay datos de la sesión, verificamos en la db con status
+					// Creamos la cadena de consulta
+					$c1['sql']	=	" users.id = ".$userid." AND intercambios.in_status = 1 AND intercambios.in_fecha BETWEEN '" . $desde ."' AND '" . $hasta ."'";
+
+					// Obtenemos sus datos
+					$c1['ban']		=	2;
+					$data['dpca'] 	=	$this->dpca_model->m_intercambios(1,$c1);
+				}
 
 			}//End if($user)
 

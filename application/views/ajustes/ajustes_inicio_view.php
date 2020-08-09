@@ -7,7 +7,7 @@ switch ($opc) {
   
   default:// Vista incial
     ?>
-    <h4><i class="fas fa-cog"></i>&nbsp;Ajustes Generales de la aplicación</h4>
+    <h4><i class="fas fa-cog"></i>&nbsp;Ajustes Generales</h4>
     <?php 
     if(isset($conf) && $conf){
         // Nombre del Paciente

@@ -43,7 +43,7 @@ class Data_model extends CI_Model{
 				return $row->id;
 			}
 		}
-		return false;
+		return 0;
 	}// End _m_get_last
 	
 }

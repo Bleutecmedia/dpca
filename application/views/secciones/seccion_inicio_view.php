@@ -158,10 +158,47 @@ $detect = new Mobile_Detect;
                           </script>
                           <?php
                         }else{
-                          for ($i = 0; $i < $conf->conf_intercambios; $i++) {
+
+                          ?><p class="lead text-success"><i class="fas fa-info-circle"></i>&nbsp;Total de Intercambios realizados hoy: <?= $total . ' de ' . $conf->conf_intercambios ?></p><?php
+                          
+                          // Si hay datos de un Intercambio abierto
+                          if(isset($dpca) && $dpca){
                             ?>
-                            <div class="mt-2"><a href="javascript: void(0);" class="btn bg-navy"><i class="fas fa-notes-medical"></i>&nbsp;Intercambio #<?= ($i +1) ?></a></div>
+                            <strong>Orden</strong>
+                            <ul>
+                              <li>Capturar tipo de Bolsa.</li>
+                              <li>Capturar Peso de Bolsa nueva.</li>
+                              <li>Capturar Fecha y hora de inicio de la salida.</li>
+                              <li>Capturar Fecha y hora de fin de la salida.</li>
+                              <li>Capturar Fecha y hora de inicio de la entrada.</li>
+                              <li>Capturar Fecha y hora de fin de la entrada.</li>
+                              <li>Capturar Peso del líquido de salida.</li>
+                            </ul>
+                            
                             <?php
+                            echo '<pre>';
+                            print_r($this->session->all_userdata());
+                            echo '</pre>';
+
+                            echo '<pre>';
+                            print_r($dpca);
+                            echo '</pre>';
+
+                          }else{
+                            // No hay Intercambios abiertos, damos opción a abrir uno
+                            for ($i = $total + 1; $i <= $conf->conf_intercambios; $i++) {
+                              if($total != $conf->conf_intercambios){
+                                ?><div class="mt-2">
+                                  <a href="javascript: void(0);" onclick="fn_intercambio('<?= $i ?>');" class="btn bg-navy"><i class="fas fa-notes-medical"></i>&nbsp;Realizar Intercambio #<?= $i ?></a>
+                                  </div><?php
+                                  break;
+                              }
+                            }// For
+                          }// End if(isset($dpca) && $dpca)
+                          
+                          // Si ya llegamos al límite, lo advertimos
+                          if($total == $conf->conf_intercambios){
+                            ?><p class="lead text-info"><i class="fas fa-clipboard-check"></i>&nbsp;Ya ha realizado el total de los <b><?= $conf->conf_intercambios ?></b> intercambios del día.</p><?php
                           }
                         }
                         
@@ -181,6 +218,41 @@ $detect = new Mobile_Detect;
               $(function(){
 
               });
+
+              function fn_intercambio(num){
+                Swal.fire({
+                  title: '¿Desea empezar a realizar el intercambio #'+num+'?',
+                  text: 'Esto abrirá un nuevo proceso de intercambio de DCPA.',
+                  icon: 'question',
+                  showCancelButton: true,
+                  confirmButtonText: 'Sí, abrir',
+                  cancelButtonText: 'No'
+                }).then((result) => {
+                  if (result.value) {
+                    
+                    $.ajax({
+                      url: 'dpca/nuevo',
+                      cache: false,
+                      type: 'post',
+                      dataType: 'html',
+                      data:{id:0,'csrf_token': csrf_token},
+                      beforeSend: function(request){
+                         
+                      },
+                      error:function(){ 
+                        fn_error();
+                      },
+                      success: function(html) { 
+                        setTimeout(function() {
+                          location.href = '<?= base_url() ?>';
+                        }, 2000);
+                      },
+                      timeout: 6000
+                    });
+
+                  } 
+                })
+              }
             </script>
             <?php
           }else{

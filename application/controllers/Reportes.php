@@ -21,6 +21,13 @@ class Reportes extends CI_Controller {
             exit;
         }
 
+        // Obtenemos la Configuración del Sitio
+		$data['conf'] 		=	$this->ajustes_model->m_app(); //Configuración del Sitio
+		
+		// Cargamos la vista para deplegar el Inicio de la Aplicación
+		$data['opc']	=	0;
+		$this->load->view('reportes/reportes_inicio_view',$data);
+
 	}// End index
 
 

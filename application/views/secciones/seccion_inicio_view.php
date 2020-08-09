@@ -44,34 +44,130 @@ $detect = new Mobile_Detect;
                     <ul class="nav nav-tabs" id="custom-tabs-two-tab" role="tablist">
                       <li class="pt-2 px-3"><h3 class="card-title"><i class="fas fa-laptop-medical"></i>&nbsp;<b><?= $this->config->item('app_name') ?></b></h3></li>
                       <li class="nav-item">
-                        <a class="nav-link active" id="custom-tabs-two-inicio-tab" data-toggle="pill" href="#custom-tabs-two-inicio" role="tab" aria-controls="custom-tabs-two-inicio" aria-selected="true"><?= $detect->isMobile() ? '<i class="fas fa-diagnoses"></i>&nbsp;' : '<i class="fas fa-diagnoses"></i>&nbsp;' ?>Control</a>
+                        <a class="nav-link active" id="tab_inicio-tab" data-toggle="pill" href="#tab_inicio" role="tab" aria-controls="tab_inicio" aria-selected="true"><?= $detect->isMobile() ? '<i class="fas fa-diagnoses"></i>&nbsp;' : '<i class="fas fa-diagnoses"></i>&nbsp;' ?>Control</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" id="custom-tabs-two-profile-tab" data-toggle="pill" href="#custom-tabs-two-profile" role="tab" aria-controls="custom-tabs-two-profile" aria-selected="false"><?= $detect->isMobile() ? '<i class="fas fa-cog"></i>' : '<i class="fas fa-cog"></i>&nbsp;Ajustes' ?></a>
+                        <a class="nav-link" id="tab_todos-tab" data-toggle="pill" href="#tab_todos" onclick="fn_cargar_ajax_g('ajustes','tab_todos',0)" role="tab" aria-controls="tab_todos" aria-selected="false"><?= $detect->isMobile() ? '<i class="fas fa-cog"></i>' : '<i class="fas fa-cog"></i>&nbsp;Ajustes' ?></a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" id="custom-tabs-two-messages-tab" data-toggle="pill" href="#custom-tabs-two-messages" role="tab" aria-controls="custom-tabs-two-messages" aria-selected="false"><?= $detect->isMobile() ? '<i class="far fa-address-book"></i>' : '<i class="far fa-address-book"></i>&nbsp;Reportes' ?></a>
+                        <a class="nav-link" id="tab_todos-tab" data-toggle="pill" href="#tab_todos" onclick="fn_cargar_ajax_g('reportes','tab_todos',0)" role="tab" aria-controls="tab_todos" aria-selected="false"><?= $detect->isMobile() ? '<i class="far fa-address-book"></i>' : '<i class="far fa-address-book"></i>&nbsp;Reportes' ?></a>
                       </li>
-                      
                     </ul>
                   </div>
                   <div class="card-body">
                     <div class="tab-content" id="custom-tabs-two-tabContent">
-                      <div class="tab-pane fade active show" id="custom-tabs-two-inicio" role="tabpanel" aria-labelledby="custom-tabs-two-inicio-tab">
+                      <div class="tab-pane fade active show" id="tab_inicio" role="tabpanel" aria-labelledby="tab_inicio-tab">
+                        <h4><i class="fas fa-diagnoses"></i>&nbsp;Realizar DPCA</h4>
                         <?php 
-                        for ($i = 0; $i < $conf->conf_intercambios; $i++) {
+                        // Si no se ha especificado nombre del Paciente, lo Pide
+                        if($conf->conf_paciente == ""){
+                          // Nombre del Paciente
+                          $paciente = array(
+                            'name'        => 'paciente',
+                            'id'          => 'paciente',
+                            'tabindex'    =>  '1',
+                            'class'       =>  'form-control validate[required]',
+                            'placeholder' =>  'Nombre del Paciente'
+                          );
+
+                          echo form_open('ajustes/paciente','name="add_paciente" id="add_paciente" class="form-horizontal"'); 
+                          
                           ?>
-                          <div class="mt-2"><a href="javascript: void(0);" class="btn bg-navy"><i class="fas fa-notes-medical"></i>&nbsp;Intercambio #<?= ($i +1) ?></a></div>
+                          <div class="row">
+                            <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12">
+                              <label for="paciente">&nbsp;Nombre del Paciente:</label><br>
+                              <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text"><i class="fas fa-user-injured"></i></span>
+                                </div>
+                                 <?php echo form_input($paciente); ?>
+                               </div><!-- ./input-group -->
+                            </div><!-- ./col-xl-8 col-lg-8 col-md-12 col-sm-12 -->
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                              <label>&nbsp;</label><br>
+                              <button type="button" id="sendform" class="btn btn-primary"><i class="fas fa-save"></i>&nbsp;Guardar Datos</button>
+                            </div><!-- ./col-xl-4 col-lg-4 col-md-12 col-sm-12 -->
+                          </div><!-- ./row -->
+                          <?php echo form_close(); ?>
+                          
+                          <script type="text/javascript">
+                            $(function(){
+                              $("#add_paciente").validationEngine(
+                                  'attach',
+                                  {
+                                   onFieldFailure: function(form, status){
+                                      var elm = $('#sendform');
+                                      elm.prop('disabled', false);
+                                      elm.html( elm.data('original-text') );
+                                    }
+                                  },
+                                  {
+                                    promptPosition : "bottomLeft", 
+                                    scroll: true 
+                                  }, 
+                                  {
+                                    focusFirstField : true 
+                                  });
+
+                              var options = {
+                                target:         '#div_oculto',
+                                beforeSubmit:   showRequest,
+                                success:        showResponse,
+                                dataType:       'html',
+                                timeout:        3000
+                              };
+
+                              $('#add_paciente').ajaxForm(options);
+
+                              var elm = $('#sendform');
+
+                              elm.on('click',function(event){
+                                event.preventDefault();
+
+                                var loadingText = '<i class="fas fa-sync-alt fa-spin"></i> Guardando datos...';
+                                if (elm.html() !== loadingText) {
+                                  elm.data( 'original-text', elm.html() );
+                                  elm.html(loadingText);
+                                }
+
+                                elm.prop('disabled', true);
+                                  setTimeout(function() {
+                                    $("#add_paciente").submit();
+                                  }, 500);
+                              })
+                              
+                            }); // function
+
+                            function showRequest(formData, jqForm, options) {
+                              var queryString = $.param(formData);
+
+                            }
+
+                            function showResponse(responseText, statusText, xhr, $form){
+                              var elm = $("#sendform");
+                              elm.prop('disabled', false);
+                              elm.html( elm.data('original-text') );
+
+                              if(responseText > 0){
+                                fn_success();
+                                setTimeout(function(){ location.href="<?= base_url(); ?>"; }, 3000);
+                              }else{
+                                fn_error();
+                              }//enf if(responseText)
+                            }
+                          </script>
                           <?php
+                        }else{
+                          for ($i = 0; $i < $conf->conf_intercambios; $i++) {
+                            ?>
+                            <div class="mt-2"><a href="javascript: void(0);" class="btn bg-navy"><i class="fas fa-notes-medical"></i>&nbsp;Intercambio #<?= ($i +1) ?></a></div>
+                            <?php
+                          }
                         }
+                        
                         ?>
                       </div>
-                      <div class="tab-pane fade" id="custom-tabs-two-profile" role="tabpanel" aria-labelledby="custom-tabs-two-profile-tab">
-                         Mauris tincidunt mi at erat gravida, eget tristique urna bibendum. Mauris pharetra purus ut ligula tempor, et vulputate metus facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas sollicitudin, nisi a luctus interdum, nisl ligula placerat mi, quis posuere purus ligula eu lectus. Donec nunc tellus, elementum sit amet ultricies at, posuere nec nunc. Nunc euismod pellentesque diam.
-                      </div>
-                      <div class="tab-pane fade" id="custom-tabs-two-messages" role="tabpanel" aria-labelledby="custom-tabs-two-messages-tab">
-                         Morbi turpis dolor, vulputate vitae felis non, tincidunt congue mauris. Phasellus volutpat augue id mi placerat mollis. Vivamus faucibus eu massa eget condimentum. Fusce nec hendrerit sem, ac tristique nulla. Integer vestibulum orci odio. Cras nec augue ipsum. Suspendisse ut velit condimentum, mattis urna a, malesuada nunc. Curabitur eleifend facilisis velit finibus tristique. Nam vulputate, eros non luctus efficitur, ipsum odio volutpat massa, sit amet sollicitudin est libero sed ipsum. Nulla lacinia, ex vitae gravida fermentum, lectus ipsum gravida arcu, id fermentum metus arcu vel metus. Curabitur eget sem eu risus tincidunt eleifend ac ornare magna.
-                      </div>
+                      <div class="tab-pane fade" id="tab_todos" role="tabpanel" aria-labelledby="tab_todos-tab"></div>
                       
                     </div>
                   </div>
@@ -80,6 +176,12 @@ $detect = new Mobile_Detect;
 
               </div><!-- /.col -->
             </div><!-- /.row -->
+
+            <script type="text/javascript">
+              $(function(){
+
+              });
+            </script>
             <?php
           }else{
             // El usuario no está logueado

@@ -7,48 +7,128 @@ switch ($opc) {
   
   default:// Vista incial
     ?>
-    <!-- Content Header (Page header) -->
-    <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-            <h1 class="m-0 text-dark"><i class="fas fa-cogs"></i>&nbsp;<?php echo lang('label_ajustes'); ?></h1>
-          </div><!-- /.col-xl-6 col-lg-6 col-md-6 col-sm-6-->
-          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><i class="fas fa-tachometer-alt"></i>&nbsp;<a href="<?php echo base_url(); ?>"><?php echo lang('label_inicio'); ?></a></li>
-              <li class="breadcrumb-item"><a href="javascript: void(0);" onclick="fn_cargar_ajax_g('ajustes','load_content',0)"><?php echo lang('label_ajustes'); ?></a></li>
-            </ol>
-          </div><!-- /.col-xl-6 col-lg-6 col-md-6 col-sm-6 -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div><!-- /.content-header -->
+    <h4><i class="fas fa-cog"></i>&nbsp;Ajustes Generales de la aplicación</h4>
+    <?php 
+    if(isset($conf) && $conf){
+        // Nombre del Paciente
+        $paciente = array(
+          'name'        => 'paciente',
+          'id'          => 'paciente',
+          'tabindex'    =>  '1',
+          'class'       =>  'form-control validate[required]',
+          'placeholder' =>  'Nombre del Paciente',
+          'value'       =>  $conf->conf_paciente
+        );
 
-    <div class="row">
-      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-        <div class="card">
-          <div class="card-header">
-            <h5 class="card-title"><i class="fas fa-cog"></i>&nbsp;AJUSTES DE LA APLICACIÓN</h5>
+        // Nombre del Paciente
+        $intercambios = array(
+          'name'          => 'intercambios',
+          'id'            => 'intercambios',
+          'tabindex'      =>  '2',
+          'class'         =>  'form-control validate[required]',
+          'placeholder'   =>  'Intercambios al día',
+          'data-inputmask'=>   "'alias': 'integer'",
+          'value'         =>  $conf->conf_intercambios
+        );
 
-            <div class="card-tools">
-              <button type="button" class="btn btn-tool" data-widget="collapse">
-                <i class="fas fa-minus"></i>
-              </button>
+      echo form_open('ajustes/generales','name="ajustesa" id="ajustesa" class="form-horizontal"'); 
+      ?>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-xl-6 col-lg-6">
+          <label for="paciente">&nbsp;Nombre del Paciente:</label><br>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-user-injured"></i></span>
             </div>
-          </div><!-- /.card-header -->
-          <div class="card-body">
-            
-            
-          </div><!-- ./card-body -->
+            <?php echo form_input($paciente); ?>
+         </div><!-- ./input-group -->
+        </div><!-- ./col-sm-12 col-md-12 col-xl-6 col-lg-6 -->
+        <div class="col-sm-12 col-md-12 col-xl-4 col-lg-4">
+          <label for="intercambios">&nbsp;Intercambios por día:</label><br>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-user-injured"></i></span>
+            </div>
+            <?php echo form_input($intercambios); ?>
+         </div><!-- ./input-group -->
+        </div><!-- ./col-sm-12 col-md-12 col-xl-4 col-lg-4 -->
+        <div class="col-sm-12 col-md-12 col-xl-2 col-lg-2">
+          <label>&nbsp;</label><br>
+          <button type="button" id="sendforma" class="btn btn-primary"><i class="fas fa-save"></i>&nbsp;Guardar Datos</button>
+        </div><!-- ./col-sm-12 col-md-12 col-xl-2 col-lg-2 -->
+      </div><!-- ./row -->
+      <?php echo form_close(); ?>
 
-          <div class="card-footer">
-            
-          </div><!-- /.card-footer -->
+      <script type="text/javascript">
+        $(function(){
+          $(":input").inputmask();
+          $("#ajustesa").validationEngine(
+            'attach',
+            {
+             onFieldFailure: function(form, status){
+                var elm = $('#sendforma');
+                elm.prop('disabled', false);
+                elm.html( elm.data('original-text') );
+              }
+            },
+            {
+              promptPosition : "bottomLeft", 
+              scroll: true 
+            }, 
+            {
+              focusFirstField : true 
+            });
 
-        </div><!-- /.card -->
+          var options = {
+            target:         '#div_oculto',
+            beforeSubmit:   showRequest,
+            success:        showResponse,
+            dataType:       'html',
+            timeout:        3000
+          };
 
-      </div><!-- /.col -->
-    </div><!-- /.row -->
-    <?php
+          $('#ajustesa').ajaxForm(options);
+
+          var elm = $('#sendforma');
+
+          elm.on('click',function(event){
+            event.preventDefault();
+
+            var loadingText = '<i class="fas fa-sync-alt fa-spin"></i> Guardando datos...';
+            if (elm.html() !== loadingText) {
+              elm.data( 'original-text', elm.html() );
+              elm.html(loadingText);
+            }
+
+            elm.prop('disabled', true);
+              setTimeout(function() {
+                $("#ajustesa").submit();
+              }, 500);
+          })
+          
+        }); // function
+
+        function showRequest(formData, jqForm, options) {
+          var queryString = $.param(formData);
+
+        }
+
+        function showResponse(responseText, statusText, xhr, $form){
+          var elm = $("#sendforma");
+          elm.prop('disabled', false);
+          elm.html( elm.data('original-text') );
+
+          if(responseText > 0){
+            fn_success('Datos actualizados correctamente.');
+            setTimeout(function(){ location.href="<?= base_url(); ?>"; }, 3000);
+          }else{
+            fn_error();
+          }//enf if(responseText)
+        }
+      </script>
+      <?php
+    }else{
+      ?><p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp;No hay ajustes que modificar.</p><?php
+    }
     break;
 }

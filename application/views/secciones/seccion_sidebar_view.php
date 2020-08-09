@@ -70,23 +70,6 @@
 				              </li>					              
 				            </ul>
 				            
-				            <?php 
-				            if( $this->ion_auth->logged_in() ){
-				            	?>
-				            	<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-					              <!-- Add icons to the links using the .nav-icon class
-					              with font-awesome or any other icon font library -->
-
-					              <li class="nav-item">
-					                <a href="javascript: void(0);" onclick="fn_cargar_ajax_g('<?php echo base_url(); ?>ajustes','load_content',0)" class="nav-link">
-				                      <i class="fas fa-cog"></i>
-				                      <p><?php echo lang('label_ajustes'); ?></p>
-				                    </a>
-					              </li>
-					            </ul>
-				            	<?php
-				            }
-				            ?>
 			          	</nav><!-- /.sidebar-menu -->
 
 				    </div><!-- /.sidebar -->

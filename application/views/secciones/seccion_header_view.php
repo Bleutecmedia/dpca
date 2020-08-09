@@ -54,6 +54,7 @@
             <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/noty@3.2.0-beta/lib/noty.css">
             <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/noty@3.2.0-beta/lib/themes/nest.css">
             <link rel="stylesheet" href="<?php echo base_url('assets/css/custom.css'); ?>">
+            <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         </head>
 
 		<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed" oncontextmenu="return true">

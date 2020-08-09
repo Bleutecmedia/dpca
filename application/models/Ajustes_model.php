@@ -41,10 +41,11 @@ class Ajustes_model extends CI_Model{
 		$this->db->trans_begin();
 
 		// Capturamos ID del ajuste 
-		$userid 	=	$p1['conf_userid'];
+		$confid 		=	$p1['confid'];
+		unset($p1['confid']);
 
 		// Ejecutamos la consulta
-		$this->db->where('conf_userid',$userid)->update('config', $p1);
+		$this->db->where('confid',$confid)->update('config', $p1);
 
 		//Comprobamos el resultado de las Transacciones
 		if ($this->db->trans_status() === FALSE ) {//No se ejecutó, deshacemos los cambios y retornamos FALSE

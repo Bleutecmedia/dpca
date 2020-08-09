@@ -21,7 +21,6 @@
 		<script type="text/javascript">
 			var csrf_token 	= "<?php echo $csrf_token; ?>";
 		</script>
-		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/admin-lte/3.0.5/js/adminlte.min.js"></script>
 		<script type="text/javascript" src="//cdn.jsdelivr.net/npm/sweetalert2@9"></script>

@@ -181,13 +181,14 @@ $detect = new Mobile_Detect;
 
                             // Peso inicial
                             $peso_inicial = array(
-                              'name'          => 'peso_inicial',
-                              'id'            => 'peso_inicial',
-                              'tabindex'      =>  '1',
-                              'class'         =>  'form-control validate[required]',
-                              'data-inputmask'=>   "'alias': 'integer'",
-                              'placeholder'   =>  'Peso Inicial',
-                              'value'         =>  $dpca->in_peso_inicial
+                                'name'          => 'peso_inicial',
+                                'id'            => 'peso_inicial',
+                                'tabindex'      =>  '1',
+                                'class'         =>  'form-control validate[required]',
+                                'data-inputmask'=>   "'alias': 'integer'",
+                                'placeholder'   =>  'Peso Inicial',
+                                'value'         =>  $dpca->in_peso_inicial,
+                                'onClick'      => 'this.setSelectionRange(0, this.value.length)'
                             );
 
                             // Peso final
@@ -198,7 +199,8 @@ $detect = new Mobile_Detect;
                               'class'         =>  'form-control validate[required]',
                               'data-inputmask'=>   "'alias': 'integer'",
                               'placeholder'   =>  'Peso Final',
-                              'value'         =>  $dpca->in_peso_final
+                              'value'         =>  $dpca->in_peso_final,
+                                'onClick'      => 'this.setSelectionRange(0, this.value.length)'
                             );
 
                             echo form_open('ajustes/paciente','name="add_paciente" id="add_paciente" class="form-horizontal"'); 
@@ -247,7 +249,12 @@ $detect = new Mobile_Detect;
                                       ?><a href="javascript: void(0)" onclick="fn_proceso(3,'sale_inicio',0)" class="btn btn-block bg-maroon"><i class="fas fa-hourglass-start"></i>&nbsp;Empieza la Salida</a><?php
                                     }else{
                                       ?>
-                                      <p class="lead"><?= unix_to_human($dpca->in_hora_sale_inicio) ?><small class="float-right"><a href="javascript: void(0)" onclick="fn_proceso(3,'sale_inicio',0)" class="btn btn-sm btn-default"><i class="fas fa-redo-alt"></i></a></small></p>
+                                      <p class="lead"><?= unix_to_human($dpca->in_hora_sale_inicio);
+                                          if($dpca->in_hora_sale_termina == 0){
+                                              ?><small class="float-right"><a href="javascript: void(0)" onclick="fn_proceso(3,'sale_inicio',0)" class="btn btn-sm btn-default"><i class="fas fa-redo-alt"></i></a></small><?php
+                                          }
+                                          ?>
+                                          </p>
                                       
                                       <?php
                                     }
@@ -265,7 +272,12 @@ $detect = new Mobile_Detect;
                                         ?><a href="javascript: void(0)" onclick="fn_proceso(3,'sale_termina',0)" class="btn btn-block bg-maroon"><i class="fas fa-hourglass-end"></i>&nbsp;Termina la Salida</a><?php
                                       }else{
                                         ?>
-                                        <p class="lead"><?= unix_to_human($dpca->in_hora_sale_termina) ?><small class="float-right"><a href="javascript: void(0)" onclick="fn_proceso(3,'sale_termina',0)" class="btn btn-sm btn-default"><i class="fas fa-redo-alt"></i></a></small></p>
+                                        <p class="lead"><?= unix_to_human($dpca->in_hora_sale_termina);
+                                        if($dpca->in_hora_entra_inicio == 0){
+                                            ?><small class="float-right"><a href="javascript: void(0)" onclick="fn_proceso(3,'sale_termina',0)" class="btn btn-sm btn-default"><i class="fas fa-redo-alt"></i></a></small><?php
+                                        }
+                                        ?>
+                                        </p>
                                         
                                         <?php
                                       }
@@ -289,7 +301,12 @@ $detect = new Mobile_Detect;
                                           ?><a href="javascript: void(0)" onclick="fn_proceso(3,'entra_inicio',0)" class="btn btn-block bg-olive"><i class="fas fa-hourglass-start"></i>&nbsp;Empieza la Entrada</a><?php
                                         }else{
                                           ?>
-                                          <p class="lead"><?= unix_to_human($dpca->in_hora_entra_inicio) ?><small class="float-right"><a href="javascript: void(0)" onclick="fn_proceso(3,'entra_inicio',0)" class="btn btn-sm btn-default"><i class="fas fa-redo-alt"></i></a></small></p>
+                                          <p class="lead"><?= unix_to_human($dpca->in_hora_entra_inicio);
+                                          if($dpca->in_hora_entra_termina == 0){
+                                              ?><small class="float-right"><a href="javascript: void(0)" onclick="fn_proceso(3,'entra_inicio',0)" class="btn btn-sm btn-default"><i class="fas fa-redo-alt"></i></a></small><?php
+                                          }
+                                          ?>
+                                          </p>
                                           
                                           <?php
                                         }
@@ -307,7 +324,11 @@ $detect = new Mobile_Detect;
                                             ?><a href="javascript: void(0)" onclick="fn_proceso(3,'entra_termina',0)" class="btn btn-block bg-olive"><i class="fas fa-hourglass-start"></i>&nbsp;Termina la Entrada</a><?php
                                           }else{
                                             ?>
-                                            <p class="lead"><?= unix_to_human($dpca->in_hora_entra_termina) ?><small class="float-right"><a href="javascript: void(0)" onclick="fn_proceso(3,'entra_termina',0)" class="btn btn-sm btn-default"><i class="fas fa-redo-alt"></i></a></small></p>
+                                            <p class="lead"><?= unix_to_human($dpca->in_hora_entra_termina);
+                                            if($dpca->in_peso_final == 0){
+                                                ?><small class="float-right"><a href="javascript: void(0)" onclick="fn_proceso(3,'entra_termina',0)" class="btn btn-sm btn-default"><i class="fas fa-redo-alt"></i></a></small><?php
+                                            }
+                                            ?></p>
                                             <?php
                                           }
                                           ?>

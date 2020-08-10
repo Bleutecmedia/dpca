@@ -117,7 +117,7 @@ switch ($opc) {
 
 			var tableinter = $('#intercambios').DataTable({
 				//"order": [[ 0, "desc" ]],
-				responsive: false,
+				responsive: true,
 				language: {
 						processing:     "&nbsp;<i class='fa fa-refresh fa-spin fa-2x fa-fw'></i><?php echo lang('label_dt_procesando'); ?>",
 						search:         "<?php echo lang('label_dt_buscar'); ?>:",

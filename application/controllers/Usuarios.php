@@ -78,8 +78,6 @@ class Usuarios extends CI_Controller {
             *   autenticarlo también con Ion-Auth. 
             */
 
-            // Folio de la password
-            $folio  =   str_gen(10);
 
             // Capturamos los datos del Usuario autenticado con google
             $gid        =   $user['id'];
@@ -90,6 +88,10 @@ class Usuarios extends CI_Controller {
             $photo      =   !empty($user['picture']) ? $user['picture'] : '';
             $lang       =   !empty($user['locale']) ? $user['locale'] : '';
             $profile    =   !empty($user['link']) ? $user['link'] : '';
+
+            // Creamos usuario y password
+            $username   =   explode("@",$email)[0];
+            $password   =   $this->hash_password($username);
 
             // Obtenemos los datos del Usuario mediante el Email
             $c1['email']=   $email;
@@ -116,9 +118,7 @@ class Usuarios extends CI_Controller {
                 $userid         =   $usr->id;
 
             }else{// CREAMOS REGISTRO DE USUARIO
-                // Creamos password
-                $username   =   explode("@",$email)[0];
-                $password   =   $this->hash_password($username);
+
 
                 $accion         =   1;
 
@@ -135,7 +135,6 @@ class Usuarios extends CI_Controller {
                 $usuario['profile']     =   $profile;
                 $usuario['username']    =   $username;
                 $usuario['password']    =   $password;
-
             }
 
             // Agregamos datos al array de usuario
@@ -150,7 +149,7 @@ class Usuarios extends CI_Controller {
             if($res){
 
                 /* Logueamos al usuario con Ion-Auth */
-                $this->ion_auth->login($email, $folio, TRUE);
+                $this->ion_auth->login($email, $username, TRUE);
 
                 // Agregamos los datos adicionales a la sesión
                 $sesion['gid']    =   $gid;

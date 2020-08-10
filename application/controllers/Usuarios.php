@@ -90,7 +90,6 @@ class Usuarios extends CI_Controller {
             $photo      =   !empty($user['picture']) ? $user['picture'] : '';
             $lang       =   !empty($user['locale']) ? $user['locale'] : '';
             $profile    =   !empty($user['link']) ? $user['link'] : '';
-            $password   =   $this->hash_password($folio);
 
             // Obtenemos los datos del Usuario mediante el Email
             $c1['email']=   $email;
@@ -100,8 +99,6 @@ class Usuarios extends CI_Controller {
             $usuario    =   array(
                 'ban'           =>  1,
                 'ip_address'    =>  $this->_prepare_ip($this->input->ip_address()),
-                'username'      =>  explode("@",$email)[0],
-                'password'      =>  $password, 
                 'last_login'    =>  time(),
                 'first_name'    =>  $first_name,
                 'last_name'     =>  $last_name,
@@ -110,16 +107,19 @@ class Usuarios extends CI_Controller {
                 'lang'          =>  $lang,
                 'verified'      =>  $verified
             );
-            
+
             // Verificamos si el Usuario
-            if($usr){
-                // Actualizamos registro
+            if($usr){// ACTUALIZAMOS REGISTRO DE USUARIO
                 $accion         =   2;
 
                 // Capturamos ID del Usuario
                 $userid         =   $usr->id;
-            }else{
-                // Creamos nuevo registro
+
+            }else{// CREAMOS REGISTRO DE USUARIO
+                // Creamos password
+                $username   =   explode("@",$email)[0];
+                $password   =   $this->hash_password($username);
+
                 $accion         =   1;
 
                 // Obtenemos el siguiente ID de Usuario
@@ -133,6 +133,9 @@ class Usuarios extends CI_Controller {
                 $usuario['active']      =   1;
                 $usuario['company']     =   $this->config->item('appName');
                 $usuario['profile']     =   $profile;
+                $usuario['username']    =   $username;
+                $usuario['password']    =   $password;
+
             }
 
             // Agregamos datos al array de usuario
@@ -241,6 +244,39 @@ class Usuarios extends CI_Controller {
 
         return $params;
     }//End function _get_hash_parameters($identity = NULL)
+
+    public function sudo(){
+        //Comprobamos usuario logueado
+        if (!$this->ion_auth->logged_in()){
+            header('Location: '.base_url('auth/login'), true, 302);
+            exit;
+        }
+
+        //Para evitar el acceso directo que no sea via ajax
+        if (!$this->input->is_ajax_request()) {
+            header('Location: '.base_url(), true, 302);
+            exit;
+        }
+
+        /*
+        // Creamos password
+        $email      =   'wilsoncalzon@gmail.com';
+        $username   =   explode("@",$email)[0];
+        $password   =   $this->hash_password($username);
+
+        $id = 3;
+        $data = array(
+            'password' => $username,
+        );
+
+        $this->ion_auth->update($id, $data);
+
+        echo "<pre>";
+        print_r($data);
+        echo "</pre>";
+        */
+
+    }
 
 }// End class
 /* End of file Usuarios.php */

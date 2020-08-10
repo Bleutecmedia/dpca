@@ -23,7 +23,8 @@
 	    	?>
 	    	<!-- Right navbar links -->
 	        <ul class="navbar-nav ml-auto">
-	          	<li><a href="<?= $loginURL ?>"><img src="<?= base_url('assets/img/btn_google_signin_dark_normal_web.png') ?>"></a></li>
+                <li><a href="<?= base_url() ?>auth/login" class="btn btn-default"><i class="fas fa-user-nurse"></i>&nbsp;Usuario Local</a></li>
+	          	<li><a href="<?= $loginURL ?>"><img src="<?= base_url('assets/img/btn_google_signin_dark_normal_web.png') ?>" width="85%"></a></li>
 	        </ul>
 	    	<?php
 	    }else{

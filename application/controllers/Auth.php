@@ -111,8 +111,8 @@ class Auth extends CI_Controller
 		}else{
 
 			// Deshabilita función
-			header('Location: '.base_url(), true, 302);
-			exit();
+			/*header('Location: '.base_url(), true, 302);
+			exit();*/
 				
 			// the user is not logging in so display the login page
 			// set the flash data error message if there is one

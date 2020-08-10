@@ -8,7 +8,7 @@ $this->load->view('secciones/seccion_header_login_view');
   <div class="card">
      <!-- /.login-logo -->
     <div class="login-logo m-3">
-      <a href="<?php echo base_url(); ?>"><img class="img-fluid" src="<?php echo base_url(); ?>assets/img/logos/logo.png"></a>
+      <a href="<?php echo base_url(); ?>"><img class="img-fluid" src="<?php echo base_url(); ?>assets/img/logos/logo.png" width="140px"></a>
     </div>
 
     <div class="card-body login-card-body">

@@ -14,7 +14,7 @@
 	        	<a href="https://bleutecmedia.com" target="_blank" class="nav-link"><i class="fas fa-laptop-code"></i>&nbsp;Bleutecmedia</a>
 	      	</li>
 	      	<li class="nav-item d-none d-sm-inline-block">
-	        	<a href="javascript: void(0);" onclick="openmodal('<?= base_url(); ?>/assets/docs/ayuda/site/index.html')" class="nav-link"><i class="fas fa-question-circle"></i>&nbsp;Ayuda</a>
+	        	<a href="javascript: void(0);" class="nav-link"><i class="fas fa-question-circle"></i>&nbsp;Ayuda</a>
 	      	</li>
 	      	
 	    </ul>

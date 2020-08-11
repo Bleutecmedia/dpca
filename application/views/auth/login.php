@@ -70,8 +70,6 @@ $this->load->view('secciones/seccion_header_login_view');
         <?php
       }
       ?>
-      <p class="text-center"><a href="<?php echo $this->config->item('tienda_url_shop'); ?>" target="_blank"><i class="fas fa-shopping-cart"></i>&nbsp;Comprar una Membresía</a></p>
-
     </div><!-- /.login-card-body -->
   </div><!-- ./card -->
 </div><!-- /.login-box -->

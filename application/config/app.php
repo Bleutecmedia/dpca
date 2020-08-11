@@ -13,8 +13,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 
 // https://console.developers.google.com
-$config['google']['client_id']        = '109666526818-0t2i1n3ita85jpkitj3mmroom4gjc2r2.apps.googleusercontent.com';
-$config['google']['client_secret']    = 'z-HEBx3kf6NLtCPlBjtdJryO';
+$config['google']['client_id']        = '';
+$config['google']['client_secret']    = '';
 $config['google']['redirect_uri']     = 'http://dialisis.net/dialisis/usuarios/ingresar';
 $config['google']['application_name'] = 'Diálisis';
 $config['google']['api_key']          = '';

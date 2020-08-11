@@ -193,6 +193,7 @@ $detect = new Mobile_Detect;
                             $peso_final = array(
                               'name'          => 'peso_final',
                               'id'            => 'peso_final',
+                                'type'        =>'number',
                               'tabindex'      =>  '1',
                               'class'         =>  'form-control validate[required]',
                               'data-inputmask'=>   "'alias': 'integer'",

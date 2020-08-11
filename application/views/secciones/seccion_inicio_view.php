@@ -179,17 +179,15 @@ $detect = new Mobile_Detect;
                               }
                             }
 
-                            // Peso inicial
-                            $peso_inicial = array(
-                                'name'          => 'peso_inicial',
-                                'id'            => 'peso_inicial',
-                                'tabindex'      =>  '1',
-                                'class'         =>  'form-control validate[required]',
-                                'data-inputmask'=>   "'alias': 'integer'",
-                                'placeholder'   =>  'Peso Inicial',
-                                'value'         =>  $dpca->in_peso_inicial,
-                                'onClick'      => 'this.setSelectionRange(0, this.value.length)'
-                            );
+                            // Peso Ini
+                          $pesoin = $dpca->in_peso_inicial;
+
+                            // Select peso
+                          $peso_inicial[''] = 'Seleccione Peso Inicial';
+                          for ($i = 2005; $i <= 2025; $i+=5){
+                              $peso_inicial[$i]     =   $i;
+                          }
+
 
                             // Peso final
                             $peso_final = array(
@@ -200,7 +198,7 @@ $detect = new Mobile_Detect;
                               'data-inputmask'=>   "'alias': 'integer'",
                               'placeholder'   =>  'Peso Final',
                               'value'         =>  $dpca->in_peso_final,
-                                'onClick'      => 'this.setSelectionRange(0, this.value.length)'
+                                'onclick'      => 'this.select();'
                             );
 
                             echo form_open('ajustes/paciente','name="add_paciente" id="add_paciente" class="form-horizontal"'); 
@@ -228,7 +226,7 @@ $detect = new Mobile_Detect;
                                     <div class="input-group-prepend">
                                       <span class="input-group-text"><i class="fas fa-weight"></i></span>
                                     </div>
-                                     <?php echo form_input($peso_inicial); ?>
+                                      <?php echo form_dropdown('peso_inicial',$peso_inicial,$pesoin,'id="peso_inicial" tabindex=2 class="form-control validate[required]"'); ?>
                                    </div><!-- ./input-group -->
                                 </div><!-- ./col-sm-12 col-md-12 col-lg-4 col-xl-4 -->
                               </div><!-- ./row -->

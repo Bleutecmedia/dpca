@@ -20,11 +20,9 @@ del IMSS (aplicación no oficial).
 
 `composer install`
 
-
 - 3.- **Puede tener configurado en `application/config/config.php` la carga automática de Composer con:**
 
 `$config['base_url'] = 'http://dialisis.net/dialisis/';`
-
 
 - 4.- **Crear las credenciales en nuetro Proyecto en la Consola Google para la Autenticación**
 Ir a [https://console.developers.google.com/](https://console.developers.google.com/)
@@ -39,10 +37,12 @@ $config['google']['application_name'] = 'DialiApp';
 $config['google']['api_key']          = '';
 $config['google']['scopes']           = array('email','profile');
 ```
-
 - 7.- Si está usando servidor local, para el caso de Windows agregar en `C:\Windows\System32\drivers\etc\hosts`
 `127.0.0.1 	 http://dialisis.net` para poder probar el login, ya que la Aplicación de Google no permite
 agregar URL locales para probar el Auth.
 
-- 6.- Acceder a `http://dialisis.net/dialisis` para iniciar sesión con google.
-- 7.- Probar y adecuar a cualquier.
+- 6.- Importar la base de datos desde `assets/db/dialisis.sql`
+
+- 7.- Acceder a `http://dialisis.net/dialisis` para iniciar sesión con google.
+
+- 8.- Probar y adecuar.

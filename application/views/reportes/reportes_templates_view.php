@@ -63,7 +63,7 @@ if(isset($intercambios) && $intercambios){
                 <th rowspan="2"># Bolsa</th>
                 <th rowspan="2">% SOL</th>
                 <th colspan="2">HORA SALIDA</th>
-                <th colspan="2">HORA SALIDA</th>
+                <th colspan="2">HORA ENTRADA</th>
                 <th colspan="2">PESO (GRAMOS)</th>
                 <th colspan="2">BALANCE</th>
                 <th rowspan="2">OBSERVACIONES</th>

@@ -1,6 +1,6 @@
 ## DiáliApp - Aplicación para Gestionar Diálisis Peritoneal Ambulatoria (DPCA)
 
-Aplicación Web simple construida en **CodeIgnuter 3.x** para realizar el control de la Diálisis Peritoneal Ambulatoria (DPCA)
+Aplicación Web simple construida en **CodeIgniter 3.x** para realizar el control de la Diálisis Peritoneal Ambulatoria (DPCA)
 del IMSS (aplicación no oficial). 
 
 ### DEMO

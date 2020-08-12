@@ -19,30 +19,34 @@ switch ($opc) {
     ?>
     <h4><i class="fas fa-file-pdf"></i>&nbsp;Reportes de la DPCA</h4>
     <div class="row">
-    	<div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
+    	<div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
 
-    	</div><!-- ./col-sm-12 col-md-12 col-lg-9 col-xl-9 -->
-    	<div class="col-sm-12 col-md-12 col-lg-3 col-xl-3">
+    	</div><!-- ./col-sm-12 col-md-12 col-lg-6 col-xl-6 -->
+    	<div class="col-sm-12 col-md-12 col-lg-4 col-xl-4">
     		<div class="input-group mb-3">
             <div class="input-group-prepend">
               <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
             </div>
              <?php echo form_input($fechas); ?>
            </div><!-- ./input-group -->
-    	</div><!-- ./col-sm-12 col-md-12 col-lg-3 col-xl-3 -->
+    	</div><!-- ./col-sm-12 col-md-12 col-lg-4 col-xl-4 -->
+
+        <div class="col-sm-12 col-md-12 col-lg-2 col-xl-2">
+            <a href="javascript: void(0);" onclick="fn_reporte()" class="btn btn-block btn-primary"><i class="fas fa-file-pdf"></i>&nbsp;Reporte</a>
+        </div><!-- ./col-sm-12 col-md-12 col-lg-2 col-xl-2 -->
     </div><!-- ./row -->
 
-
+    <div id="get_report"></div>
     <div class="table-responsive">
     	<table class="table" id="intercambios" data-page-length='25' class="display table table-striped table-hover table-border table-condensed" cellspacing="0" width="100%">
 	    	<thead>
 	    		<tr>
 	    			<th>#</th>
 	    			<th>DIA</th>
+	    			<th>SALE INICIO</th>
+	    			<th>SALE FIN</th>
 	    			<th>ENTRA INICIO</th>
 	    			<th>ENTRA FIN</th>
-	    			<th>SALIDA INICIO</th>
-	    			<th>SALIDA FIN</th>
 	    			<th>PESO INICIO</th>
 	    			<th>PESO FIN</th>
 	    			<th>OPC</th>
@@ -185,9 +189,15 @@ switch ($opc) {
 		    $("#reportrangee").change(function(e){
 		    	tableinter.draw();
 		    });
-
-
     	});
+
+    	function fn_reporte(){
+    	    let rango  =   $("#reportrangee").val();
+
+    	    if(rango != ""){
+                fn_cargar_ajax_g('reportes/pdf','get_report',0,rango);
+            }
+        }
     </script>
     <?php
     break;

@@ -17,7 +17,7 @@ class Pdf{
             'margin_right'      =>  '5',
             'mode'              =>  'utf-8',     //Codepage Values OR Codepage Values
             'format'            =>  'A4',        //A4, Letter, Legal, Executive, Folio, Demy, Royal, etc
-            'orientation'       =>  'P'          //"L" for Landscape orientation, "P" for Portrait orientation
+            'orientation'       =>  'L'          //"L" for Landscape orientation, "P" for Portrait orientation
         ]); 
     }
 }

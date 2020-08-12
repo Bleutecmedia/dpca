@@ -54,7 +54,6 @@ class Reportes extends CI_Controller {
         // Recibimos los datos desde $_GET
 		$search 	=	$this->input->post('search');
 		$order 		=	$this->input->post('order');
-		$provid 	=	$this->input->post('proveedor');
 
 		// Capturamos ID del Usuario
 		$userid 	=	$this->session->userdata('user_id');
@@ -177,6 +176,101 @@ class Reportes extends CI_Controller {
 
 	}// End intercambios()
 
+    /**
+     * Función del Controlador para generar el Reporte en PDF
+     */
+    public function pdf(){
+        //Comprobamos usuario logueado
+        if (!$this->ion_auth->logged_in()){
+            header('Location: '.base_url('auth/login'), true, 302);
+            exit;
+        }
+
+        //Para evitar el acceso directo que no sea via ajax
+        if (!$this->input->is_ajax_request()) {
+            header('Location: '.base_url(), true, 302);
+            exit;
+        }
+
+        // Obtenemos la Configuración del Sitio
+        $conf 		    =	$this->ajustes_model->m_app(); //Configuración del Sitio
+
+        // Capturamos ID del Usuario
+        $userid 	    =	$this->session->userdata('user_id');
+
+        //Procesamos el intervalo de fechas del tipo '2017-11-14 - 2017-11-14' a '2017-11-14' y '2017-11-14'
+        //Lo anterior, con la ayuda de la función substr — Devuelve parte de una cadena
+        $fechas 		=	$this->input->get('item1');//'2017-11-14 - 2017-11-14'
+        $fecha_desde 	=	human_to_unix(trim(substr($fechas,0,11)) . ' 00:00:00');// Retorna: '2017-04-24'
+        $fecha_hasta	=	human_to_unix(trim(substr($fechas,-11)) . ' 23:59:59');//Retorna: '2017-09-28'
+
+        $sql_user 		=	"users.id = ".$userid." AND intercambios.in_status = 2 ";
+
+        $sql_fecha =	"";// Fecha de Salida del Producto
+        if(isset($fechas) && $fechas != ""){
+            $sql_fecha = " AND intercambios.in_fecha BETWEEN '" . $fecha_desde ."' AND '" . $fecha_hasta ."'";
+        }
+
+        // Creamos la cadena de consulta
+        $c1['sql']      =   $sql_user.$sql_fecha;
+
+        // Obtenemos todos los registros disponibles
+        $c1['ban']      =   4;
+        $intercambios   =   $this->reportes_model->m_intercambios(1,$c1);
+
+        // OBTENEMOS EL ULTIMO REGISTRO DEL DIA ANTERIOR PARA EL CALCULO DE LAS DIFERENCIAS DE PESOS
+        $f_desde =  $fecha_desde - 86400;
+        $f_hasta =  $fecha_hasta - 86400;
+
+        // Modificamos la consulta de fechas
+        $sql_fecha = " AND intercambios.in_fecha BETWEEN '" . $f_desde ."' AND '" . $f_hasta ."'";
+
+        // Creamos la cadena de consulta
+        $c1['sql']      =   $sql_user.$sql_fecha;
+
+        // Obtenemos el ultimo registro
+        $c1['ban']      =   5;
+        $data['ultimo'] =   $this->reportes_model->m_intercambios(1,$c1);
+
+        // Pasamos a la vista
+        $data['intercambios']   =   $intercambios;
+        $data['fechas']         =   $fechas;
+        $data['conf']           =   $conf;
+
+        // Path del reporte PDF
+        $relative  =    FCPATH."assets/uploads/reportes/";
+        $absolute  =    base_url('assets/uploads/reportes/');
+
+        // Si no existe el directorio, lo creamos
+        // Verificaos existencia del directorio, si no existe lo creamos
+        if ( file_exists($relative) == FALSE ){
+            // Si no existe la carpeta, la creamos
+            if(!mkdir($relative, 0777, true)) {
+                // Si falla al crear la carpeta, mandamos mensaje
+                die('Fallo al crear las carpetas...');
+            }
+        }
+
+        // Creamos el array para llamar la función que crea el PDF
+        $data_pdf 	=	array(
+            'pdf_filename'	=> 	$fechas,
+            'pdf_folio'		=>	str_gen(10),
+            'pdf_title'		=>  "",
+            'pdf_depto'		=> 	"",
+            'pdf_process'	=> "",
+            'pdf_path_r'	=> 	$absolute,
+            'pdf_path_a'	=> 	$relative,
+            'pdf_template'	=>	"reportes/reportes_templates_view",
+            'pdf_data'		=>	$data,
+            'pdf_tags'		=>	'dpca',
+            'accion'		=>	'F' ///Guardamos el PDF (F) o lo descargamos (D)
+        );
+
+        //Llamamos la funcion que genera los PDF
+        $this->_pdf($data_pdf);
+
+    }
+
 
 	public function _pdf($p1=""){
 		// Función del Controlador para generar PDF con mPDF v8.x
@@ -203,7 +297,7 @@ class Reportes extends CI_Controller {
 
 		// Verificamos si existe, si es así, eliminamos archivo PDF antes de generar el actual
 	    $pdfFilePath = $p1['pdf_path_a'].$p1['pdf_filename'].'.pdf';
-	    if( read_file($pdfFilePath) == TRUE && $p1['pdf_delete'] ){ //Si existe el archivo, y se indicó que se debe volver a crear...
+	    if( read_file($pdfFilePath) == TRUE ){ //Si existe el archivo, y se indicó que se debe volver a crear...
 			chmod($pdfFilePath, 0777);
 			unlink($pdfFilePath);
 		}
@@ -212,9 +306,11 @@ class Reportes extends CI_Controller {
 		$html = $this->load->view($p1['pdf_template'],$p1,true);
 		
 		//Verificamos si el archivo existe, para evitar volver a crearlo y gastar recursos 
-		if (file_exists($pdfFilePath) == FALSE){	
+		if (file_exists($pdfFilePath) == FALSE){
+
 			//Datos a mostrar en el Header del documento
-			$header = array (
+			/*
+            $header = array (
 			  'odd' => array (
 				    'L' => array (
 				      'content' 	=> 	mb_strtoupper( $p1['pdf_depto'] ),
@@ -243,7 +339,7 @@ class Reportes extends CI_Controller {
 			$footer = array (
 			  'odd' => array (
 				    'L' => array (
-				      'content' 	=> 	'<font color="green">FECHA Y HORA</font>: {DATE Y-m-d H:i:s }',
+				      'content' 	=> 	'',
 				      'font-size' 	=> 	8,
 				      'font-style' 	=> 	'B',
 				      'color'		=>	'#1c5d79'
@@ -255,7 +351,7 @@ class Reportes extends CI_Controller {
 				      'color'		=>	'#1c5d79'
 				    ),
 				    'R' => array (
-				      'content' 	=> 	'<font color="red">https://bleutecmedia.com</font>',
+				      'content' 	=> 	'',
 				      'font-size' 	=> 	8,
 				      'font-style' 	=> 	'B',
 				      'color'		=>	'#1c5d79'
@@ -264,6 +360,7 @@ class Reportes extends CI_Controller {
 			  ),
 			  'even'  => array ()
 			);
+			*/
 
 			// Aumentamos la memoria necesaria, si esta es baja
 		    ini_set('memory_limit','64M');
@@ -282,8 +379,8 @@ class Reportes extends CI_Controller {
 		    $pdf->SetTextColor(100,149,237);
 
 		    // Escribimos el ENCABEZADO y el PIE de páginas
-		    $pdf->SetHeader($header);
-		    $pdf->SetFooter($footer);
+		    // $pdf->SetHeader($header);
+		    //  $pdf->SetFooter($footer);
 
 		    // Especificamos qué podemos permitir en el PDF creado.
 		    // En este caso sólo permitir la Impresión del PDF
@@ -324,7 +421,7 @@ class Reportes extends CI_Controller {
 		    $pdf->allow_charset_conversion = true; 
 
 		    // Guardamos el PDF (F) o lo descargamos (D), según necesitemos
-		    $pdf->Output($pdfFilePath, $p1['pdf_accion']);
+		    $pdf->Output($pdfFilePath, $p1['accion']);
 			
 		}/* End if(pdfFilePath) */
 		
@@ -334,7 +431,7 @@ class Reportes extends CI_Controller {
 		$data['file']	= 	$p1['pdf_filename'];
 		$data['path_a']	=	$p1['pdf_path_a'].$p1['pdf_filename'].'.pdf';
 		$data['path_r']	=	$p1['pdf_path_r'].$p1['pdf_filename'].'.pdf';
-		$data['datos']	=	$p1['datos'];
+		$data['datos']	=	$p1['pdf_data'];
 		$this->load->view('reportes/reportes_display_view',$data);
 
 	}//End _pdf

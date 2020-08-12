@@ -68,6 +68,42 @@ class Reportes_model extends CI_Model{
                     }
                     return 0;
                     
+                }else if(isset($p1['ban']) && $p1['ban'] == 4){// Retorna intercambios para el Reporte
+                    $q  =   $this
+                        ->db
+                        ->select('intercambios.*,soluciones.*,users.id AS "userid"')
+                        ->from('intercambios')
+                        ->join('users','users.id = intercambios.in_userid')
+                        ->join('soluciones','soluciones.solid = intercambios.in_solid')
+                        ->where($p1['sql'])
+                        ->order_by('in_fecha','ASC')
+                        ->get();
+
+                    if ($q->num_rows() > 0){
+                        return $q->result();
+                    }
+                    return false;
+
+                }else if(isset($p1['ban']) && $p1['ban'] == 5){// Retorna intercambios para el Reporte
+                    $q  =   $this
+                        ->db
+                        ->select('intercambios.*,soluciones.*,users.id AS "userid"')
+                        ->from('intercambios')
+                        ->join('users','users.id = intercambios.in_userid')
+                        ->join('soluciones','soluciones.solid = intercambios.in_solid')
+                        ->where($p1['sql'])
+                        ->order_by('in_fecha','DESC')
+                        ->limit (1)
+                        ->get();
+
+                    if ($q->num_rows() > 0){
+                        foreach ($q->result() as $row) {
+                            return $row;
+                        }
+                        return $q->num_rows();
+                    }
+                    return false;
+
                 }
                 break;
 

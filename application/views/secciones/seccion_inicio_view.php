@@ -184,7 +184,7 @@ $detect = new Mobile_Detect;
 
                             // Select peso
                           $peso_inicial[''] = 'Seleccione Peso Inicial';
-                          for ($i = 2005; $i <= 2025; $i+=5){
+                          for ($i = 2205; $i <= 2225; $i+=5){
                               $peso_inicial[$i]     =   $i;
                           }
 

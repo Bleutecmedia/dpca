@@ -14,7 +14,7 @@
         "vendor-dir": "application/vendor"
     },
 	"require": {
-		"php": ">=5.3.7",
+		"php": ">=7.4",
 		"phpmailer/phpmailer": "^6.1",
 		"mpdf/mpdf": "^8.0",
 		"google/apiclient": "^2.0",
@@ -22,9 +22,5 @@
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
-	},
-	"require-dev": {
-		"mikey179/vfsStream": "1.1.*",
-		"phpunit/phpunit": "4.* || 5.*"
 	}
 }

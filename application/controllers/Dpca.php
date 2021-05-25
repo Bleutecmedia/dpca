@@ -82,13 +82,38 @@ class Dpca extends CI_Controller {
 
 					$interid 		=	$this->data_model->m_get_last_id($c1) + 1;// ID del próximo Carnicero
 
+					// Generamos los pesos de las soluciones
+					$pesos 			=	[2205,2210,2210,2215,2215,2215,2220,2225];
+
+					// Generamos las horas
+					$horas 			=	array(
+						'0'		=> 	'09',
+						'1'		=>	'13',
+						'2'		=>	'17',
+						'3'		=>	'21'
+					);
+
+					// Generamos hora inicial
+					$inicio 	=	date('Y-m-d') . ' '.$horas[$total] . ':' . str_pad(mt_rand(0,10), 2, "0", STR_PAD_LEFT) . ':' . str_pad(mt_rand(0,59), 2, "0", STR_PAD_LEFT);
+					
+					// Pasamos a unix
+					$sale_inicio 	=	human_to_unix($inicio); // de 0 a 10 minutos desde la hora
+					$sale_termina 	=	$sale_inicio + ( mt_rand(28,39) * 60 ); // de 28 a 39 minutos
+					$entra_inicio 	=	$sale_termina + mt_rand(20,60); // de 20 a 60 segundos despues
+					$entra_termina 	=	$entra_inicio + + ( mt_rand(10,16) * 60 ); // de 10 a 16 minutos 
+
 					// Creamos array para abrir nuevo Intercambio
 					$intercambio 	=	array(
-						'ban'			=>	1,
-						'interid'		=>	$interid,
-						'in_solid'		=>	1, // N/A
-						'in_fecha'		=>	time(),
-						'in_userid'		=>	$userid
+						'ban'					=>	1,
+						'interid'				=>	$interid,
+						'in_solid'				=>	2, // 1.5%
+						'in_fecha'				=>	time(),
+						'in_userid'				=>	$userid,
+						'in_peso_inicial'		=> 	$pesos[array_rand($pesos)],
+						'in_hora_sale_inicio'	=>  $sale_inicio,
+						'in_hora_sale_termina'	=>  $sale_termina,
+						'in_hora_entra_inicio'	=>  $entra_inicio,
+						'in_hora_entra_termina'	=> 	$entra_termina 
 					);
 
 					// Llamamos la función del Modelo que abre el intercambio

@@ -1,10 +1,10 @@
 RewriteEngine On
-RewriteBase /dialisis/
+RewriteBase /dpca/
 
 Options -Indexes
-RewriteRule ^$ /dialisis/index.php [L]
+RewriteRule ^$ /dpca/index.php [L]
 RewriteCond $1 !^(index\.php|assets|system|user_guide|robots\.txt|favicon\.ico)
-RewriteRule ^(.*)$ /dialisis/index.php?/$1 [L]
+RewriteRule ^(.*)$ /dpca/index.php?/$1 [L]
 
 RewriteCond %{REQUEST_URI} ^system.*
 RewriteRule ^(.*)$ /index.php?/$1 [L]

@@ -3,6 +3,10 @@
 Aplicación Web simple construida en **CodeIgniter 3.x** para realizar el control de la Diálisis Peritoneal Ambulatoria (DPCA)
 del IMSS (aplicación no oficial). 
 
+### Default Login
+- **User**: admin@admin.com
+- **Pass**: password
+
 ### DEMO
 [https://dpca.bleutecmedia.com/](https://dpca.bleutecmedia.com/)
 

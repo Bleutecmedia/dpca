@@ -143,6 +143,25 @@ class Dpca_model extends CI_Model{
     }// End m_socuciones
 
 
+    /**
+    * Función del Modelo para gestionar los pesos de las bolsas
+    */
+    public function m_pesos($id="",$p1=""){
+        switch ($id) {
+            case 1:// Listar
+                // code...
+                break;
+
+            case 2: // Transacciones
+                break;
+            
+            default:// Retorna todos
+            
+                break;
+        }
+    }// End m_pesos
+
+
     /** 
     *	Función del Modelo para retornar último registro de una tabla
     */

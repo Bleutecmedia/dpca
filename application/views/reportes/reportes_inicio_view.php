@@ -142,7 +142,7 @@ switch ($opc) {
  case 2: // MODAL PARA AGREGAR INTERCAMBIO EN DIA
 	?>
 	<div class="modal-header">
-		<h4 class="modal-title"><i class="fas fa-edit"></i>&nbsp;AGREGAR INTERCAMBIO</h4>
+		<h4 class="modal-title"><i class="fas fa-plus-circle"></i>&nbsp;AGREGAR INTERCAMBIO</h4>
 		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 			<span aria-hidden="true">&times;</span>
 		</button>
@@ -156,7 +156,7 @@ switch ($opc) {
 					$pasa 	=	TRUE;
 				}
 
-				if($pasa && isset($inters) && $inters){
+				if($pasa){
 
 					// Horas
 					$horas 			=	array(
@@ -186,30 +186,32 @@ switch ($opc) {
 							</thead>
 							<tbody>
 								<?php 
-								foreach ($inters as $k => $row) {
-
-									//
-									$hora 	=	date('H',$row->in_hora_sale_inicio);
-									if(in_array($hora,$horas)){
-										// Obtenemos key
-										$key = array_search($hora,$horas);
-										
-										// Quitamos
-										unset($horas[$key]);
+								if(isset($inters) && $inters){
+									foreach ($inters as $k => $row) {
+										//
+										$hora 	=	date('H',$row->in_hora_sale_inicio);
+										if(in_array($hora,$horas)){
+											// Obtenemos key
+											$key = array_search($hora,$horas);
+											
+											// Quitamos
+											unset($horas[$key]);
+		
+										}
 	
+										?>
+										<tr>
+											<td class="text-center"><?= $k + 1 ?></td>
+											<td class="text-center"><?= $row->in_dia ?></td>
+											<td class="text-center"><?= date('H:i:s',$row->in_hora_sale_inicio) ?></td>
+											<td class="text-center"><?= date('H:i:s',$row->in_hora_sale_termina) ?></td>
+											<td class="text-center"><?= date('H:i:s',$row->in_hora_entra_inicio) ?></td>
+											<td class="text-center"><?= date('H:i:s',$row->in_hora_entra_termina) ?></td>
+										</tr>
+										<?php
 									}
-
-									?>
-									<tr>
-										<td class="text-center"><?= $k + 1 ?></td>
-										<td class="text-center"><?= $row->in_dia ?></td>
-										<td class="text-center"><?= date('H:i:s',$row->in_hora_sale_inicio) ?></td>
-										<td class="text-center"><?= date('H:i:s',$row->in_hora_sale_termina) ?></td>
-										<td class="text-center"><?= date('H:i:s',$row->in_hora_entra_inicio) ?></td>
-										<td class="text-center"><?= date('H:i:s',$row->in_hora_entra_termina) ?></td>
-									</tr>
-									<?php
 								}
+								
 								?>
 							</tbody>
 						</table>

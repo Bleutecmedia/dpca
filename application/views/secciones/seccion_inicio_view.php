@@ -182,8 +182,10 @@ $detect = new Mobile_Detect;
                             // Peso Ini
                           $pesoin = $dpca->in_peso_inicial;
 
-                            // Select peso
+                          // Select peso
                           $peso_inicial[''] = 'Seleccione Peso Inicial';
+                          $peso_inicial[200]     =  200;
+                          $peso_inicial[500]     =  500;
                           for ($i = 2205; $i <= 2225; $i+=5){
                               $peso_inicial[$i]     =   $i;
                           }

@@ -104,6 +104,37 @@ class Reportes_model extends CI_Model{
                     }
                     return false;
 
+                }else if(isset($p1['ban']) && $p1['ban'] == 6){ // Retorna datos de un intercambio
+                    $q  =   $this
+                        ->db
+                        ->select('intercambios.*,soluciones.*,users.id AS "userid"')
+                        ->from('intercambios')
+                        ->join('users','users.id = intercambios.in_userid')
+                        ->join('soluciones','soluciones.solid = intercambios.in_solid')
+                        ->where('intercambios.interid',$p1['interid'])
+                        ->get();
+
+                    if ($q->num_rows() > 0){
+                        foreach ($q->result() as $row) {
+                            return $row;
+                        }
+                    }
+                    return false;
+
+                }else if(isset($p1['ban']) && $p1['ban'] == 7){
+                    $q  =   $this
+                    ->db
+                    ->select('intercambios.*,soluciones.*,users.id AS "userid"')
+                    ->from('intercambios')
+                    ->join('users','users.id = intercambios.in_userid')
+                    ->join('soluciones','soluciones.solid = intercambios.in_solid')
+                    ->where($p1['sql'])
+                    ->get();
+
+                    if ($q->num_rows() > 0){
+                        return $q->result();
+                    }
+                    return false;
                 }
                 break;
 
@@ -111,8 +142,15 @@ class Reportes_model extends CI_Model{
                 //Iniciamos la Transacción manual
                 $this->db->trans_begin();
 
-                if(isset($p1['ban']) && $p1['ban'] == 1){
+                if(isset($p1['ban']) && $p1['ban'] == 1){ // EDITAR PESOS DE INTERCAMBIO
+                    // Capturamos ID
+                    $interid    =   $p1['interid'];
 
+                    // Quitamos
+                    unset($p1['ban'],$p1['interid']);
+
+                    // Actualizamos
+                    $this->db->where('interid',$interid)->update('intercambios',$p1);
 
                 }else if(isset($p1['ban']) && $p1['ban'] == 2){
 

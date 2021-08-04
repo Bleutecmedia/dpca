@@ -8,6 +8,8 @@ class Reportes extends CI_Controller {
 		parent::__construct();
 
 		// Cargamos el Modelo
+		$this->load->model('data_model');
+		$this->load->model('dpca_model');
 		$this->load->model('reportes_model');
 	}
 
@@ -175,6 +177,170 @@ class Reportes extends CI_Controller {
 		echo json_encode($res);
 
 	}// End intercambios()
+
+	/**
+	 * Función del controlador para adecuar o editar intercambios con errores
+	 */
+	public function fix(){
+		// Comprobamos usuario logueado o no es el Administrador
+        if (!$this->ion_auth->logged_in()){
+            header('Location: '.base_url('auth/login'), true, 302);
+            exit;
+        }
+        
+        // Para evitar el acceso directo que no sea via ajax 
+        if ( !$this->input->is_ajax_request() ) {
+            header('Location: '.base_url(), true, 302);
+            exit;
+        }
+
+        // Recibimos bandera
+        $ban    =   $this->input->get_post('id');
+
+		// Decidimsoa que hacer
+		switch ($ban) {
+			case 1: // MUESTRA MODAL PARA EDITAR UN INTERCAMBIO
+				// Capturamos ID de intercambio
+				$c1['interid']	=	$this->input->get('item1');
+
+				// Obtenemos datos del intercambio
+				$c1['ban']		=	6;
+				$data['inter']	=	$this->reportes_model->m_intercambios(1,$c1);
+
+				// Cargamos la vista
+				$data['opc']	=	1;
+				$this->load->view('reportes/reportes_inicio_view',$data);
+
+				break;
+
+			case 2: // GUARDAR CAMBIOS EN INTERCAMBIO
+
+				// Saneamos los envíos por $_POST
+				$this->input->post(NULL, TRUE);  // returns all POST items with XSS filter  
+
+				// Procedemos a validar los campos desde el lado del servidor, enviados por el formulario desde $_POST
+				$this->load->library('form_validation');// Cargamos la librería para Validaciones de CodeIgnite
+
+				// Cargamos el modelo
+				$this->load->model('data_model');
+
+				// Creamos las reglas de validación comunes para las 2 acciones (guardar nuevo ó editar existente)
+				$this->form_validation->set_rules('interid','Intercambio', 'trim|required|numeric|is_natural_no_zero');
+				$this->form_validation->set_rules('peso_inicial','Incial', 'trim|required|numeric');
+				$this->form_validation->set_rules('peso_final','Final', 'trim|required|numeric');
+
+				// Corremos la validación y comprobamos si pasa o no
+				if ($this->form_validation->run() == FALSE){// No pasa la validación, manda error
+					echo "<div class='alert alert-error'>".validation_errors()."</div>";
+				}else{
+
+					// Creamos el array
+					$datos 		=	array(
+						'ban'				=>	1, 
+						'interid'			=>	$this->input->post('interid'),
+						'in_peso_inicial'	=>	$this->input->post('peso_inicial'),
+						'in_peso_final'		=>	$this->input->post('peso_final')
+					);
+					
+					// Llamamos la función del Modelo que guarda los datos de un nievo registro o cambia los datos de uno existente:
+					$res 	=	$this->reportes_model->m_intercambios(2,$datos);
+					
+					// Procesamos la respuesta de la consulta
+					echo $res ? 1 : 0;
+					
+				}//End validate ok";
+				break;
+
+			case 3: // MODAL PARA AGREGAR DIA
+				//Procesamos el intervalo de fechas del tipo '2017-11-14 - 2017-11-14' a '2017-11-14' y '2017-11-14'
+				//Lo anterior, con la ayuda de la función substr — Devuelve parte de una cadena
+				$fechas 		=	$this->input->get('item1');//'2017-11-14 - 2017-11-14'
+				//$fecha_desde 	=	human_to_unix(trim(substr($fechas,0,11)) . ' 00:00:00');
+				//$fecha_hasta	=	human_to_unix(trim(substr($fechas,-11)) . ' 23:59:59');
+
+				$desde 	=	trim(substr($fechas,0,11));
+				$hasta	=	trim(substr($fechas,-11));
+
+				// Obtenemos los intercambios de esos dias
+				$c1['sql']		=	"in_dia BETWEEN '" . $desde . "' AND '".$hasta."'";
+
+				$c1['ban']		=	7;
+				$data['inters']	=	$this->reportes_model->m_intercambios(1,$c1);
+
+				// Pasamos a la vista
+				$data['fechas']	=	$fechas;
+				$data['desde']	=	$desde;
+				$data['hasta']	=	$hasta;
+
+				// Cargamos la vista
+				$data['opc']	=	2;
+				$this->load->view('reportes/reportes_inicio_view',$data);
+
+				break;
+
+			case 4: // AGREGAR INTERCAMBIO FALTANTE
+				// Recibimos
+				$total 		=	$this->input->post('item1');
+				$dia 		= 	$this->input->post('item2');
+
+				// Si todavía se puede abrir intercambio
+				// Obtenemos el Siguiente ID 
+				$c1['campo']	=	"interid";
+				$c1['tabla']	=	"intercambios";
+
+				$interid 		=	$this->data_model->m_get_last_id($c1) + 1;// ID del próximo Carnicero
+
+				// Generamos los pesos de las soluciones
+				$pesos_i 			=	[2205,2210,2210,2215,2215,2215,2220,2225];
+				$pesos_f 			=	[2260,2310,2320,2360,2400,2420,2430,2440];
+
+				// Generamos las horas
+				$horas 			=	array(
+					'0'		=> 	'09',
+					'1'		=>	'13',
+					'2'		=>	'17',
+					'3'		=>	'21'
+				);
+
+				// Generamos hora inicial
+				$inicio 	=	$dia . ' '.$horas[$total - 1] . ':' . str_pad(mt_rand(0,10), 2, "0", STR_PAD_LEFT) . ':' . str_pad(mt_rand(0,59), 2, "0", STR_PAD_LEFT);
+				
+				// Pasamos a unix
+				$sale_inicio 	=	human_to_unix($inicio); // de 0 a 10 minutos desde la hora
+				$sale_termina 	=	$sale_inicio + ( mt_rand(28,39) * 60 ); // de 28 a 39 minutos
+				$entra_inicio 	=	$sale_termina + mt_rand(20,60); // de 20 a 60 segundos despues
+				$entra_termina 	=	$entra_inicio + + ( mt_rand(10,16) * 60 ); // de 10 a 16 minutos 
+
+				// Creamos array para abrir nuevo Intercambio
+				$intercambio 	=	array(
+					'ban'					=>	1,
+					'interid'				=>	$interid,
+					'in_solid'				=>	2, // 1.5%
+					'in_fecha'				=>	$sale_inicio,
+					'in_dia'				=>	$dia,
+					'in_userid'				=>	$this->session->userdata('user_id'),
+					'in_peso_inicial'		=> 	$pesos_i[array_rand($pesos_i)],
+					'in_peso_final'			=> 	$pesos_f[array_rand($pesos_f)],
+					'in_hora_sale_inicio'	=>  $sale_inicio,
+					'in_hora_sale_termina'	=>  $sale_termina,
+					'in_hora_entra_inicio'	=>  $entra_inicio,
+					'in_hora_entra_termina'	=> 	$entra_termina,
+					'in_status'				=>	2
+				);
+				
+				// Llamamos la función del Modelo que abre el intercambio
+				$res 	=	$this->dpca_model->m_intercambios(2,$intercambio);
+
+				// Procesamos la respuesta de la consulta
+				echo $res ? 1 : 0;
+
+				break;
+			
+			default:
+				# code...
+				break;
+		}
+	}// End fix
 
     /**
      * Función del Controlador para generar el Reporte en PDF

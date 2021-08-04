@@ -107,10 +107,11 @@ switch ($opc) {
 
 							function showResponse(responseText, statusText, xhr, $form){ 
 								$('#modal-lg').modal('hide');
+								var tableinter = $('#intercambios').DataTable();
 
 								if(responseText == 1){
 									fn_success();
-									//fn_cargar_ajax_g('participantes','load_content',0)
+									tableinter.draw();
 								}else{
 									fn_error();
 								}//enf if(responseText)
